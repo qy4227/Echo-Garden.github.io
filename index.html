@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>回声庭院 - 你的心灵花园</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -10,7 +10,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -25,6 +24,7 @@
             --text-muted: #718096;
             --border-color: #2d3748;
             --shadow-color: rgba(26, 31, 44, 0.8);
+            --danger-color: #ff3b30;
         }
 
         body {
@@ -33,15 +33,14 @@
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
             min-height: 100vh;
-            overflow: hidden;
             background-image: 
                 radial-gradient(circle at 20% 80%, rgba(56, 178, 172, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(237, 137, 54, 0.05) 0%, transparent 50%);
         }
 
-        /* 应用容器 */
+        /* 移动端容器 */
         .app-container {
-            max-width: 450px;
+            max-width: 400px;
             min-height: 100vh;
             margin: 0 auto;
             background: var(--bg-primary);
@@ -49,148 +48,74 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
         }
 
         /* 状态栏 */
         .status-bar {
-            padding: 15px 20px 10px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .app-name {
-            font-size: 18px;
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: var(--accent-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .app-name i {
             font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
         }
 
         .time {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        /* 联系人和聊天视图切换 */
-        .views-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .contact-list-container, .chat-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            transition: transform 0.3s ease;
-        }
-
-        .contact-list-container {
-            transform: translateX(0);
-        }
-
-        .chat-container {
-            transform: translateX(100%);
-            background: var(--bg-primary);
-        }
-
-        .chat-container.active {
-            transform: translateX(0);
-        }
-
-        /* 联系人列表 */
-        .contact-list {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 60px;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .contact-item:hover {
-            background: var(--bg-card);
-        }
-
-        .contact-item.active {
-            background: rgba(56, 178, 172, 0.1);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .contact-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            margin-right: 15px;
-            overflow: hidden;
-            border: 2px solid var(--accent-glow);
-        }
-
-        .contact-info {
-            flex: 1;
-        }
-
-        .contact-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .contact-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .contact-time {
             font-size: 12px;
             color: var(--text-muted);
         }
 
-        .contact-preview {
-            font-size: 14px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* 聊天区域 */
-        .chat-header {
-            padding: 15px 20px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
+        /* 联系人标题栏 */
+        .contacts-header {
+            padding: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .contacts-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .add-contact-btn {
+            background: var(--accent-primary);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-contact-btn:hover {
+            background: var(--accent-glow);
+            transform: scale(1.1);
+        }
+
+        /* 聊天头部 */
+        .chat-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -200,12 +125,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex: 1;
         }
 
         .back-btn {
             background: none;
             border: none;
-            color: var(--accent-primary);
+            color: var(--text-primary);
             font-size: 18px;
             cursor: pointer;
             padding: 5px;
@@ -216,14 +142,24 @@
             font-weight: 500;
         }
 
-        .chat-messages {
+        .chat-settings-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* 对话区域 */
+        .chat-container {
             flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding-bottom: 80px;
+            overflow-y: auto;
+            max-height: calc(100vh - 180px);
         }
 
         .message {
@@ -233,6 +169,9 @@
             font-size: 14px;
             line-height: 1.4;
             position: relative;
+            transition: all 0.3s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
             animation: fadeIn 0.3s ease;
         }
 
@@ -257,22 +196,26 @@
             box-shadow: 0 0 10px rgba(56, 178, 172, 0.5);
         }
 
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 13px;
+        }
+
         /* 输入区域 */
         .input-section {
-            padding: 15px 20px;
+            padding: 15px;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
-            position: fixed;
-            bottom: 60px;
-            width: 100%;
-            max-width: 450px;
-            z-index: 100;
+            flex-shrink: 0;
         }
 
         .input-container {
             display: flex;
             gap: 10px;
-            align-items: flex-end;
+            align-items: end;
         }
 
         .message-input {
@@ -286,7 +229,6 @@
             resize: none;
             max-height: 120px;
             min-height: 44px;
-            font-family: inherit;
         }
 
         .message-input:focus {
@@ -313,10 +255,9 @@
             color: white;
             font-size: 20px;
         }
-
+        
         .lightbulb:hover {
-            transform: scale(1.05);
-            background: #f6ad55;
+            transform: scale(1.1);
         }
 
         .send-button {
@@ -339,16 +280,13 @@
             transform: scale(1.05);
         }
 
-        .send-button:active {
-            transform: scale(0.95);
-        }
-
         /* AI建议区域 */
         .ai-suggestions {
             display: none;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 10px;
+            padding-bottom: 5px;
         }
 
         .ai-suggestions.active {
@@ -376,14 +314,12 @@
         .bottom-nav {
             display: flex;
             justify-content: space-around;
-            padding: 15px 20px;
+            padding: 12px 15px;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
-            position: fixed;
+            position: sticky;
             bottom: 0;
-            width: 100%;
-            max-width: 450px;
-            z-index: 100;
+            z-index: 10;
         }
 
         .nav-item {
@@ -397,6 +333,7 @@
             cursor: pointer;
             background: none;
             border: none;
+            color: inherit;
             font-family: inherit;
         }
 
@@ -414,18 +351,15 @@
         }
 
         /* 滚动条样式 */
-        .contact-list::-webkit-scrollbar,
-        .chat-messages::-webkit-scrollbar {
+        .chat-container::-webkit-scrollbar {
             width: 4px;
         }
 
-        .contact-list::-webkit-scrollbar-track,
-        .chat-messages::-webkit-scrollbar-track {
+        .chat-container::-webkit-scrollbar-track {
             background: var(--bg-secondary);
         }
 
-        .contact-list::-webkit-scrollbar-thumb,
-        .chat-messages::-webkit-scrollbar-thumb {
+        .chat-container::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 2px;
         }
@@ -436,7 +370,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 装饰元素 */
+        /* 花园装饰元素 */
         .decoration {
             position: absolute;
             font-size: 12px;
@@ -448,16 +382,19 @@
         .decoration-2 { top: 25%; right: 8%; }
         .decoration-3 { bottom: 30%; left: 5%; }
 
-        /* 搜索功能 */
+        /* 搜索结果导航 */
         .search-container {
-            padding: 10px 20px;
+            padding: 10px 15px;
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
             display: none;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
         }
 
         .search-input {
-            width: 100%;
+            flex: 1;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
@@ -471,6 +408,15 @@
             border-color: var(--accent-primary);
         }
 
+        .search-cancel-btn {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
         .search-results {
             display: none;
             justify-content: space-between;
@@ -481,11 +427,11 @@
             font-size: 12px;
             color: var(--text-secondary);
         }
-
+        
         .search-results.active {
             display: flex;
         }
-
+        
         .search-nav-btn {
             background: var(--accent-primary);
             border: none;
@@ -495,10 +441,300 @@
             font-size: 11px;
             cursor: pointer;
         }
-
+        
         .search-nav-btn:disabled {
             background: var(--text-muted);
             cursor: not-allowed;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* 联系人列表样式 */
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 60px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item:hover {
+            background: var(--bg-card);
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .contact-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contact-preview {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 滑动删除样式 */
+        .contact-item-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .delete-action {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background: var(--danger-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .contact-item.swiped .delete-action {
+            transform: translateX(0);
+        }
+
+        .contact-item.swiped .contact-item-wrapper {
+            transform: translateX(-80px);
+        }
+
+        /* 设置页面样式 */
+        .settings-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 15px 80px;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-title i {
+            color: var(--accent-primary);
+        }
+
+        /* API状态 */
+        .api-status {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .api-status.success {
+            background: rgba(56, 178, 172, 0.2);
+            color: var(--accent-primary);
+        }
+
+        .api-status.error {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        /* 步骤指示器 */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .step.active {
+            background: var(--accent-primary);
+        }
+
+        /* 步骤容器 */
+        .step-container {
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        /* 视图切换 */
+        .contacts-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-view.active {
+            display: flex;
         }
 
         /* 消息操作菜单 */
@@ -537,20 +773,53 @@
             width: 16px;
         }
 
-        /* 响应式调整 */
-        @media (max-width: 450px) {
-            .app-container {
-                max-width: 100%;
-            }
-            
-            .input-section,
-            .bottom-nav {
-                max-width: 100%;
-            }
-            
-            .message {
-                max-width: 90%;
-            }
+        /* 确认删除模态框 */
+        .confirm-delete-modal {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 25px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .confirm-delete-text {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .confirm-delete-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-delete-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-delete-btn.cancel {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .confirm-delete-btn.delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .confirm-delete-btn.cancel:hover {
+            background: var(--border-color);
+        }
+
+        .confirm-delete-btn.delete:hover {
+            background: #ff1a1a;
         }
     </style>
 </head>
@@ -561,80 +830,162 @@
         <div class="decoration decoration-2">⭐</div>
         <div class="decoration decoration-3">✨</div>
 
-        <!-- 状态栏 -->
-        <div class="status-bar">
-            <div class="app-name">
-                <i class="fas fa-spa"></i>
-                回声庭院
-            </div>
-            <div class="time" id="currentTime">21:30</div>
-        </div>
-
-        <!-- 搜索栏 -->
-        <div class="search-container" id="searchContainer">
-            <input type="text" class="search-input" id="searchInput" placeholder="搜索聊天记录...">
-        </div>
-        
-        <!-- 搜索结果导航 -->
-        <div class="search-results" id="searchResults">
-            <div class="search-count" id="searchCount">找到 0 个结果</div>
-            <div class="search-nav">
-                <button class="search-nav-btn" id="prevResult" disabled>上一个</button>
-                <button class="search-nav-btn" id="nextResult" disabled>下一个</button>
-            </div>
-        </div>
-
-        <!-- 联系人和聊天视图容器 -->
-        <div class="views-container">
-            <!-- 联系人列表视图 -->
-            <div class="contact-list-container" id="contactListContainer">
-                <div class="contact-list" id="contactList">
-                    <!-- 联系人将动态添加到这里 -->
-                </div>
+        <!-- 联系人列表视图 -->
+        <div class="contacts-view" id="contactsView">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="app-name">回声庭院</div>
+                <div class="time" id="currentTime">21:30</div>
             </div>
 
-            <!-- 聊天视图 -->
-            <div class="chat-container" id="chatContainer">
-                <!-- 聊天头部 -->
-                <div class="chat-header" id="chatHeader" style="display: none;">
-                    <div class="chat-header-left">
-                        <button class="back-btn" id="backBtn">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div class="chat-title" id="chatTitle">聊天</div>
-                    </div>
-                </div>
-
-                <!-- 聊天消息区域 -->
-                <div class="chat-messages" id="chatMessages" style="display: none;">
-                    <div class="welcome-message">
-                        许自己一个可以随时离开，也随时可以回来的地方...
-                    </div>
-                    <!-- 消息将动态添加到这里 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 输入区域 -->
-        <div class="input-section">
-            <div class="input-container">
-                <textarea 
-                    class="message-input" 
-                    id="messageInput"
-                    placeholder="在这里诉说你的心声..." 
-                    rows="1"
-                ></textarea>
-                <button class="lightbulb" id="lightbulb" title="AI建议">
-                    <i class="fas fa-lightbulb"></i>
+            <!-- 联系人标题栏 -->
+            <div class="contacts-header">
+                <div class="contacts-title">对话</div>
+                <button class="add-contact-btn" id="addContactBtn" title="新建对话">
+                    <i class="fas fa-plus"></i>
                 </button>
-                <button class="send-button" id="sendButton" title="发送">
-                    <i class="fas fa-paper-plane"></i>
+            </div>
+
+            <!-- 联系人列表 -->
+            <div class="contact-list" id="contactList">
+                <!-- 联系人将动态添加到这里 -->
+            </div>
+        </div>
+
+        <!-- 聊天视图 -->
+        <div class="chat-view" id="chatView">
+            <!-- 聊天头部 -->
+            <div class="chat-header" id="chatHeader">
+                <div class="chat-header-left">
+                    <button class="back-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-title" id="chatTitle">聊天</div>
+                </div>
+                <button class="chat-settings-btn" id="chatSettingsBtn">
+                    <i class="fas fa-ellipsis-h"></i>
                 </button>
+            </div>
+
+            <!-- 搜索栏 -->
+            <div class="search-container" id="searchContainer">
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索聊天记录...">
+                <button class="search-cancel-btn" id="searchCancelBtn">取消</button>
             </div>
             
-            <!-- AI建议区域 -->
-            <div class="ai-suggestions" id="aiSuggestions">
-                <!-- AI建议将动态添加在这里 -->
+            <!-- 搜索结果导航 -->
+            <div class="search-results" id="searchResults">
+                <div class="search-count" id="searchCount">找到 0 个结果</div>
+                <div class="search-nav">
+                    <button class="search-nav-btn" id="prevResult" disabled>上一个</button>
+                    <button class="search-nav-btn" id="nextResult" disabled>下一个</button>
+                </div>
+            </div>
+
+            <!-- 对话区域 -->
+            <div class="chat-container" id="chatContainer">
+                <!-- 对话消息会动态添加在这里 -->
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-section">
+                <div class="input-container">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput"
+                        placeholder="在这里诉说你的心声..." 
+                        rows="1"
+                    ></textarea>
+                    <button class="lightbulb" id="lightbulb" title="AI帮答">
+                        <i class="fas fa-lightbulb"></i>
+                    </button>
+                    <button class="send-button" id="sendButton" title="发送">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <!-- AI建议区域 -->
+                <div class="ai-suggestions" id="aiSuggestions">
+                    <!-- AI建议将动态添加在这里 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置视图 -->
+        <div class="settings-view" id="settingsView" style="display: none;">
+            <div class="settings-container">
+                <!-- API配置 -->
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-cogs"></i>
+                        API配置
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">模型提供方</label>
+                        <select class="form-select" id="apiProvider">
+                            <option value="xushuo">叙说AI</option>
+                            <option value="custom" selected>自定义</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customApiGroup">
+                        <label class="form-label">API地址</label>
+                        <input type="text" class="form-input" id="apiUrl" placeholder="https://api.example.com/v1/chat/completions">
+                    </div>
+                    <div class="form-group" id="customApiKeyGroup">
+                        <label class="form-label">API密钥</label>
+                        <input type="password" class="form-input" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">模型</label>
+                        <div class="form-input-group" style="display: flex; gap: 10px;">
+                            <input type="text" class="form-input" id="apiModel" placeholder="gpt-3.5-turbo" style="flex: 1;">
+                            <button class="btn btn-secondary" id="getModelsBtn" style="width: auto; padding: 10px 15px;">获取模型</button>
+                        </div>
+                        <select class="form-select" id="modelSelect" style="margin-top: 10px; display: none;">
+                            <option value="">选择模型</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">温度 (0-2)</label>
+                        <input type="number" class="form-input" id="temperature" placeholder="0.7" value="0.7" step="0.1" min="0" max="2">
+                    </div>
+                    <div id="apiStatus" class="api-status" style="display: none;"></div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="saveApiConfigBtn">保存配置</button>
+                    </div>
+                </div>
+
+                <!-- 其他设置 -->
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-sliders-h"></i>
+                        其他设置
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">最大上下文长度</label>
+                        <input type="number" class="form-input" id="maxContextLength" placeholder="10" value="10" min="1" max="50">
+                        <small style="color: var(--text-muted); font-size: 12px;">保留最近的对话条数作为上下文</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">自动滚动到底部</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="autoScroll" checked>
+                            <label for="autoScroll" style="color: var(--text-secondary); font-size: 14px;">发送消息后自动滚动到最新消息</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 进阶设置 -->
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-magic"></i>
+                        进阶设置
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">AI帮答提示词</label>
+                        <textarea class="form-textarea" id="aiHelpPrompt" rows="3" placeholder="基于当前对话，生成一些回复建议...">请基于用户的当前对话内容，生成3-5个简短、自然、符合对话语境的回复建议。每个建议应该是一个完整的句子，能够帮助用户更好地表达自己的想法或继续对话。</textarea>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -644,26 +995,67 @@
                 <i class="fas fa-comments nav-icon"></i>
                 <div>对话</div>
             </button>
-            <button class="nav-item" id="navSearch">
-                <i class="fas fa-search nav-icon"></i>
-                <div>搜索</div>
-            </button>
-            <button class="nav-item highlight" id="navMemory">
-                <i class="fas fa-book nav-icon"></i>
-                <div>回忆</div>
-            </button>
             <button class="nav-item" id="navSettings">
                 <i class="fas fa-cog nav-icon"></i>
                 <div>设置</div>
             </button>
         </div>
+    </div>
 
-        <!-- 消息操作菜单 -->
-        <div class="message-menu" id="messageMenu">
-            <button class="menu-item" id="copyBtn"><i class="fas fa-copy"></i>复制</button>
-            <button class="menu-item" id="deleteBtn"><i class="fas fa-trash"></i>删除</button>
-            <button class="menu-item" id="rewriteBtn"><i class="fas fa-edit"></i>改写</button>
-            <button class="menu-item" id="regenerateBtn"><i class="fas fa-redo"></i>重新生成</button>
+    <!-- 模态框 - 创建聊天窗口 -->
+    <div class="modal" id="createChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">创建聊天窗口</h2>
+                <button class="modal-close" id="closeCreateChatModal">×</button>
+            </div>
+            <div class="step-indicator">
+                <div class="step active" id="step1"></div>
+                <div class="step" id="step2"></div>
+            </div>
+            
+            <!-- 步骤1：窗口名称 -->
+            <div class="step-container active" id="stepContainer1">
+                <div class="form-group">
+                    <label class="form-label">窗口名称</label>
+                    <input type="text" class="form-input" id="windowName" placeholder="例如：心灵对话、日常聊天等">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelCreateBtn">取消</button>
+                    <button class="btn btn-primary" id="nextStepBtn">下一步</button>
+                </div>
+            </div>
+            
+            <!-- 步骤2：角色设置 -->
+            <div class="step-container" id="stepContainer2">
+                <div class="form-group">
+                    <label class="form-label">角色名称</label>
+                    <input type="text" class="form-input" id="roleName" placeholder="例如：心灵导师、知心朋友等">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">角色描述</label>
+                    <textarea class="form-textarea" id="roleDescription" rows="3" placeholder="描述角色的性格特点、背景设定等"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">角色指令</label>
+                    <textarea class="form-textarea" id="roleInstruction" rows="3" placeholder="给AI的系统指令，例如：你是一位耐心的倾听者...">你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。</textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="prevStepBtn">上一步</button>
+                    <button class="btn btn-primary" id="createChatBtn">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 - 确认删除 -->
+    <div class="modal" id="confirmDeleteModal" style="display: none;">
+        <div class="confirm-delete-modal">
+            <div class="confirm-delete-text">确认删除这个对话窗口吗？</div>
+            <div class="confirm-delete-actions">
+                <button class="confirm-delete-btn cancel" id="cancelDeleteBtn">取消</button>
+                <button class="confirm-delete-btn delete" id="confirmDeleteBtn">删除</button>
+            </div>
         </div>
     </div>
 
@@ -673,64 +1065,157 @@
             contacts: [],
             currentContact: null,
             messages: {},
+            apiConfig: {
+                provider: 'custom',
+                url: '',
+                key: '',
+                model: 'gpt-3.5-turbo',
+                temperature: 0.7,
+                availableModels: []
+            },
+            appSettings: {
+                maxContextLength: 10,
+                autoScroll: true,
+                aiHelpPrompt: '请基于用户的当前对话内容，生成3-5个简短、自然、符合对话语境的回复建议。每个建议应该是一个完整的句子，能够帮助用户更好地表达自己的想法或继续对话。'
+            },
             isSearchActive: false,
             searchResults: [],
-            currentSearchIndex: -1
+            currentSearchIndex: -1,
+            currentStep: 1,
+            contactToDelete: null,
+            touchStartX: 0,
+            touchEndX: 0
         };
 
         // DOM元素
         const elements = {
             currentTime: document.getElementById('currentTime'),
+            contactsView: document.getElementById('contactsView'),
+            chatView: document.getElementById('chatView'),
+            settingsView: document.getElementById('settingsView'),
+            addContactBtn: document.getElementById('addContactBtn'),
             contactList: document.getElementById('contactList'),
-            contactListContainer: document.getElementById('contactListContainer'),
-            chatContainer: document.getElementById('chatContainer'),
             chatHeader: document.getElementById('chatHeader'),
-            chatMessages: document.getElementById('chatMessages'),
             chatTitle: document.getElementById('chatTitle'),
             backBtn: document.getElementById('backBtn'),
+            chatSettingsBtn: document.getElementById('chatSettingsBtn'),
+            chatContainer: document.getElementById('chatContainer'),
             messageInput: document.getElementById('messageInput'),
             sendButton: document.getElementById('sendButton'),
             lightbulb: document.getElementById('lightbulb'),
             aiSuggestions: document.getElementById('aiSuggestions'),
             navChat: document.getElementById('navChat'),
-            navSearch: document.getElementById('navSearch'),
+            navSettings: document.getElementById('navSettings'),
             searchContainer: document.getElementById('searchContainer'),
             searchInput: document.getElementById('searchInput'),
+            searchCancelBtn: document.getElementById('searchCancelBtn'),
             searchResults: document.getElementById('searchResults'),
             searchCount: document.getElementById('searchCount'),
             prevResult: document.getElementById('prevResult'),
             nextResult: document.getElementById('nextResult'),
-            messageMenu: document.getElementById('messageMenu')
+            createChatModal: document.getElementById('createChatModal'),
+            closeCreateChatModal: document.getElementById('closeCreateChatModal'),
+            windowName: document.getElementById('windowName'),
+            roleName: document.getElementById('roleName'),
+            roleDescription: document.getElementById('roleDescription'),
+            roleInstruction: document.getElementById('roleInstruction'),
+            cancelCreateBtn: document.getElementById('cancelCreateBtn'),
+            nextStepBtn: document.getElementById('nextStepBtn'),
+            prevStepBtn: document.getElementById('prevStepBtn'),
+            createChatBtn: document.getElementById('createChatBtn'),
+            step1: document.getElementById('step1'),
+            step2: document.getElementById('step2'),
+            stepContainer1: document.getElementById('stepContainer1'),
+            stepContainer2: document.getElementById('stepContainer2'),
+            confirmDeleteModal: document.getElementById('confirmDeleteModal'),
+            cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
+            confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
+            // 设置页面元素
+            apiProvider: document.getElementById('apiProvider'),
+            customApiGroup: document.getElementById('customApiGroup'),
+            customApiKeyGroup: document.getElementById('customApiKeyGroup'),
+            apiUrl: document.getElementById('apiUrl'),
+            apiKey: document.getElementById('apiKey'),
+            apiModel: document.getElementById('apiModel'),
+            getModelsBtn: document.getElementById('getModelsBtn'),
+            modelSelect: document.getElementById('modelSelect'),
+            temperature: document.getElementById('temperature'),
+            apiStatus: document.getElementById('apiStatus'),
+            saveApiConfigBtn: document.getElementById('saveApiConfigBtn'),
+            maxContextLength: document.getElementById('maxContextLength'),
+            autoScroll: document.getElementById('autoScroll'),
+            aiHelpPrompt: document.getElementById('aiHelpPrompt')
         };
 
-        // 初始化联系人
-        const initialContacts = [
-            { id: 1, name: '心灵导师', avatar: '🧘', preview: '我在这里静静聆听...', lastTime: '21:30' },
-            { id: 2, name: '记忆花园', avatar: '🌸', preview: '你的回忆在这里绽放', lastTime: '20:15' },
-            { id: 3, name: '星辰夜话', avatar: '⭐', preview: '与星星对话的时刻', lastTime: '19:45' },
-            { id: 4, name: '回音壁', avatar: '🌀', preview: '回声在这里回荡', lastTime: '18:30' },
-            { id: 5, name: '静谧湖畔', avatar: '🌊', preview: '湖水般平静的对话', lastTime: '17:20' }
-        ];
+        // 从LocalStorage加载数据
+        function loadFromLocalStorage() {
+            try {
+                const savedContacts = localStorage.getItem('echoGarden_contacts');
+                const savedMessages = localStorage.getItem('echoGarden_messages');
+                const savedApiConfig = localStorage.getItem('echoGarden_apiConfig');
+                const savedAppSettings = localStorage.getItem('echoGarden_appSettings');
+                
+                if (savedContacts) {
+                    state.contacts = JSON.parse(savedContacts);
+                }
+                
+                if (savedMessages) {
+                    state.messages = JSON.parse(savedMessages);
+                }
+                
+                if (savedApiConfig) {
+                    const apiConfig = JSON.parse(savedApiConfig);
+                    state.apiConfig = { ...state.apiConfig, ...apiConfig };
+                    elements.apiProvider.value = apiConfig.provider || 'custom';
+                    elements.apiUrl.value = apiConfig.url || '';
+                    elements.apiKey.value = apiConfig.key || '';
+                    elements.apiModel.value = apiConfig.model || 'gpt-3.5-turbo';
+                    elements.temperature.value = apiConfig.temperature || 0.7;
+                    
+                    // 更新API提供方显示
+                    updateApiProviderDisplay();
+                }
+                
+                if (savedAppSettings) {
+                    const appSettings = JSON.parse(savedAppSettings);
+                    state.appSettings = { ...state.appSettings, ...appSettings };
+                    elements.maxContextLength.value = appSettings.maxContextLength || 10;
+                    elements.autoScroll.checked = appSettings.autoScroll !== false;
+                    elements.aiHelpPrompt.value = appSettings.aiHelpPrompt || state.appSettings.aiHelpPrompt;
+                }
+                
+                // 如果没有数据，使用默认联系人
+                if (state.contacts.length === 0) {
+                    state.contacts = [
+                        { 
+                            id: Date.now(), 
+                            name: '心灵花园', 
+                            roleName: '心灵导师',
+                            roleDescription: '一位善于倾听的心灵导师',
+                            roleInstruction: '你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。',
+                            avatar: '🧘', 
+                            preview: '欢迎来到心灵花园...', 
+                            lastTime: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) 
+                        }
+                    ];
+                }
+                
+            } catch (e) {
+                console.error('加载本地存储数据失败:', e);
+            }
+        }
 
-        // 初始化消息
-        const initialMessages = {
-            1: [
-                { id: 1, content: '欢迎来到回声庭院，我是你的心灵导师。在这里，你可以放心诉说一切。', isAI: true, time: '21:30' },
-                { id: 2, content: '今天有什么想分享的吗？', isAI: true, time: '21:30' }
-            ],
-            2: [
-                { id: 1, content: '这里是你专属的记忆花园，每一个对话都是一朵盛开的花。', isAI: true, time: '20:15' }
-            ],
-            3: [
-                { id: 1, content: '夜晚的星星格外明亮，今天有什么心事想和星星分享吗？', isAI: true, time: '19:45' }
-            ],
-            4: [
-                { id: 1, content: '我是回音壁，你的每一句话都会在这里产生美丽的回声。', isAI: true, time: '18:30' }
-            ],
-            5: [
-                { id: 1, content: '湖水般平静的对话空间，让心灵得到真正的休息。', isAI: true, time: '17:20' }
-            ]
-        };
+        // 保存数据到LocalStorage
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('echoGarden_contacts', JSON.stringify(state.contacts));
+                localStorage.setItem('echoGarden_messages', JSON.stringify(state.messages));
+                localStorage.setItem('echoGarden_apiConfig', JSON.stringify(state.apiConfig));
+                localStorage.setItem('echoGarden_appSettings', JSON.stringify(state.appSettings));
+            } catch (e) {
+                console.error('保存到本地存储失败:', e);
+            }
+        }
 
         // 更新时间显示
         function updateTime() {
@@ -743,64 +1228,199 @@
         // 渲染联系人列表
         function renderContacts() {
             elements.contactList.innerHTML = '';
+            
+            if (state.contacts.length === 0) {
+                elements.contactList.innerHTML = `
+                    <div class="welcome-message" style="text-align: center; padding: 40px 20px;">
+                        <p>还没有聊天窗口</p>
+                        <p>点击上方的 + 号创建一个</p>
+                    </div>
+                `;
+                return;
+            }
+            
             state.contacts.forEach(contact => {
                 const contactItem = document.createElement('div');
                 contactItem.className = `contact-item ${state.currentContact?.id === contact.id ? 'active' : ''}`;
                 contactItem.dataset.id = contact.id;
+                
+                // 创建滑动删除结构
                 contactItem.innerHTML = `
-                    <div class="contact-avatar">${contact.avatar}</div>
-                    <div class="contact-info">
-                        <div class="contact-header">
+                    <div class="contact-item-wrapper">
+                        <div class="contact-avatar">${contact.avatar}</div>
+                        <div class="contact-info">
                             <div class="contact-name">${contact.name}</div>
-                            <div class="contact-time">${contact.lastTime}</div>
+                            <div class="contact-preview">${contact.preview}</div>
                         </div>
-                        <div class="contact-preview">${contact.preview}</div>
+                    </div>
+                    <div class="delete-action">
+                        <span>删除</span>
                     </div>
                 `;
                 
-                contactItem.addEventListener('click', () => openChat(contact));
+                // 添加点击事件
+                const contactWrapper = contactItem.querySelector('.contact-item-wrapper');
+                contactWrapper.addEventListener('click', (e) => {
+                    if (!contactItem.classList.contains('swiped')) {
+                        openChat(contact);
+                    }
+                });
+                
+                // 添加滑动事件
+                let touchStartX = 0;
+                let touchStartY = 0;
+                let isScrolling = false;
+                
+                contactWrapper.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    isScrolling = false;
+                }, { passive: true });
+                
+                contactWrapper.addEventListener('touchmove', (e) => {
+                    if (!touchStartX || !touchStartY) return;
+                    
+                    const touchX = e.touches[0].clientX;
+                    const touchY = e.touches[0].clientY;
+                    
+                    // 判断是垂直滚动还是水平滑动
+                    const diffX = touchStartX - touchX;
+                    const diffY = touchStartY - touchY;
+                    
+                    if (Math.abs(diffY) > Math.abs(diffX)) {
+                        // 垂直滚动
+                        isScrolling = true;
+                    } else if (diffX > 30 && !isScrolling) {
+                        // 向左滑动超过30px，显示删除按钮
+                        e.preventDefault();
+                        contactItem.classList.add('swiped');
+                    } else if (diffX < -30) {
+                        // 向右滑动，隐藏删除按钮
+                        contactItem.classList.remove('swiped');
+                    }
+                }, { passive: false });
+                
+                contactWrapper.addEventListener('touchend', () => {
+                    touchStartX = 0;
+                    touchStartY = 0;
+                }, { passive: true });
+                
+                // 删除按钮点击事件
+                const deleteAction = contactItem.querySelector('.delete-action');
+                deleteAction.addEventListener('click', () => {
+                    state.contactToDelete = contact;
+                    showConfirmDeleteModal();
+                });
+                
                 elements.contactList.appendChild(contactItem);
             });
+        }
+
+        // 显示确认删除模态框
+        function showConfirmDeleteModal() {
+            elements.confirmDeleteModal.style.display = 'flex';
+        }
+
+        // 隐藏确认删除模态框
+        function hideConfirmDeleteModal() {
+            elements.confirmDeleteModal.style.display = 'none';
+            state.contactToDelete = null;
+            
+            // 重置所有联系人的滑动状态
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.classList.remove('swiped');
+            });
+        }
+
+        // 删除联系人
+        function deleteContact() {
+            if (!state.contactToDelete) return;
+            
+            const contactId = state.contactToDelete.id;
+            
+            // 从联系人列表中移除
+            state.contacts = state.contacts.filter(contact => contact.id !== contactId);
+            
+            // 如果删除的是当前聊天窗口，返回联系人列表
+            if (state.currentContact && state.currentContact.id === contactId) {
+                elements.chatView.classList.remove('active');
+                elements.contactsView.style.display = 'flex';
+                state.currentContact = null;
+            }
+            
+            // 删除对应的消息记录
+            delete state.messages[contactId];
+            
+            // 更新UI
+            renderContacts();
+            saveToLocalStorage();
+            
+            // 隐藏模态框
+            hideConfirmDeleteModal();
         }
 
         // 渲染聊天消息
         function renderMessages(contactId) {
             const messages = state.messages[contactId] || [];
-            elements.chatMessages.innerHTML = '';
+            elements.chatContainer.innerHTML = '';
             
-            messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${msg.isAI ? 'ai' : 'user'}`;
-                messageDiv.dataset.id = msg.id;
-                messageDiv.dataset.isAI = msg.isAI;
-                messageDiv.innerHTML = `
-                    <div class="message-content">${msg.content}</div>
-                    <div class="message-time">${msg.time}</div>
-                `;
-                
-                // 添加长按事件
-                messageDiv.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    showMessageMenu(e, msg);
+            if (messages.length === 0) {
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'welcome-message';
+                welcomeDiv.textContent = '开始新的对话...';
+                elements.chatContainer.appendChild(welcomeDiv);
+            } else {
+                messages.forEach(msg => {
+                    addMessageToDOM(msg, false);
                 });
-                
-                elements.chatMessages.appendChild(messageDiv);
+            }
+            
+            // 确保滚动到底部显示最新消息
+            if (state.appSettings.autoScroll) {
+                scrollToBottom();
+            }
+        }
+
+        // 添加消息到DOM（不保存到历史记录）
+        function addMessageToDOM(message, shouldScroll = true) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.isUser ? 'user' : 'ai'}`;
+            messageDiv.dataset.id = message.id;
+            messageDiv.dataset.isUser = message.isUser;
+            messageDiv.innerHTML = `
+                <div class="message-content">${message.content}</div>
+            `;
+            
+            // 添加长按事件
+            messageDiv.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showMessageMenu(e, message);
             });
             
-            // 滚动到底部
-            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            elements.chatContainer.appendChild(messageDiv);
+            
+            if (shouldScroll && state.appSettings.autoScroll) {
+                scrollToBottom();
+            }
+        }
+
+        // 滚动到聊天底部
+        function scrollToBottom() {
+            setTimeout(() => {
+                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+            }, 100);
         }
 
         // 打开聊天
         function openChat(contact) {
             state.currentContact = contact;
-            renderContacts();
             
-            // 显示聊天界面
-            elements.chatHeader.style.display = 'flex';
-            elements.chatMessages.style.display = 'flex';
-            elements.contactListContainer.style.transform = 'translateX(-100%)';
-            elements.chatContainer.classList.add('active');
+            // 切换视图
+            elements.contactsView.style.display = 'none';
+            elements.settingsView.style.display = 'none';
+            elements.chatView.classList.add('active');
+            
+            // 更新聊天标题
             elements.chatTitle.textContent = contact.name;
             
             // 渲染消息
@@ -810,24 +1430,170 @@
             setTimeout(() => {
                 elements.messageInput.focus();
             }, 100);
+            
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            elements.navChat.classList.add('active');
+        }
+
+        // 显示消息菜单
+        function showMessageMenu(e, message) {
+            // 移除现有的菜单
+            const existingMenu = document.querySelector('.message-menu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+            
+            // 创建新菜单
+            const menu = document.createElement('div');
+            menu.className = 'message-menu';
+            menu.style.position = 'absolute';
+            menu.style.zIndex = '1000';
+            
+            // 计算菜单位置
+            const rect = elements.chatContainer.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            
+            // 确保菜单位置在容器内
+            if (x > rect.width - 120) x = rect.width - 120;
+            if (x < 10) x = 10;
+            if (y > rect.height - 100) y = rect.height - 100;
+            if (y < 10) y = 10;
+            
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            
+            menu.innerHTML = `
+                <button class="menu-item copy-btn"><i class="fas fa-copy"></i>复制</button>
+                <button class="menu-item delete-btn"><i class="fas fa-trash"></i>删除</button>
+            `;
+            
+            elements.chatContainer.appendChild(menu);
+            
+            // 设置点击事件
+            menu.querySelector('.copy-btn').addEventListener('click', () => {
+                navigator.clipboard.writeText(message.content);
+                menu.remove();
+            });
+            
+            menu.querySelector('.delete-btn').addEventListener('click', () => {
+                const contactId = state.currentContact.id;
+                state.messages[contactId] = state.messages[contactId].filter(m => m.id !== message.id);
+                renderMessages(contactId);
+                saveToLocalStorage();
+                menu.remove();
+            });
+            
+            // 点击其他地方关闭菜单
+            setTimeout(() => {
+                const closeMenu = (clickEvent) => {
+                    if (!menu.contains(clickEvent.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                };
+                document.addEventListener('click', closeMenu);
+            }, 10);
+        }
+
+        // 发送消息到API
+        async function sendMessageToAPI(userMessage, contact) {
+            // 检查API配置
+            if (state.apiConfig.provider === 'custom') {
+                if (!state.apiConfig.url || !state.apiConfig.key) {
+                    showAPIStatus('请先配置API设置', 'error');
+                    return null;
+                }
+            } else {
+                // 叙说AI
+                showAPIStatus('使用叙说AI服务...', 'success');
+            }
+
+            // 构建消息历史
+            const messages = [
+                {
+                    role: 'system',
+                    content: contact.roleInstruction || '你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。'
+                }
+            ];
+
+            // 添加上下文消息
+            const history = state.messages[contact.id] || [];
+            const maxContext = parseInt(state.appSettings.maxContextLength) || 10;
+            const recentHistory = history.slice(-maxContext);
+            
+            recentHistory.forEach(msg => {
+                messages.push({
+                    role: msg.isUser ? 'user' : 'assistant',
+                    content: msg.content
+                });
+            });
+
+            // 添加当前用户消息
+            messages.push({
+                role: 'user',
+                content: userMessage
+            });
+
+            try {
+                let response;
+                
+                if (state.apiConfig.provider === 'custom') {
+                    // 自定义API
+                    response = await fetch(state.apiConfig.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.apiConfig.key}`
+                        },
+                        body: JSON.stringify({
+                            model: state.apiConfig.model,
+                            messages: messages,
+                            temperature: parseFloat(state.apiConfig.temperature)
+                        })
+                    });
+                } else {
+                    // 叙说AI（这里需要替换为实际的叙说API地址）
+                    // 注意：这里只是示例，实际使用时需要正确的API地址
+                    showAPIStatus('叙说AI服务暂不可用，请使用自定义API', 'error');
+                    return null;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices?.[0]?.message?.content || data.content || '收到。';
+            } catch (error) {
+                console.error('API调用错误:', error);
+                showAPIStatus(`API调用失败: ${error.message}`, 'error');
+                return null;
+            }
         }
 
         // 发送消息
-        function sendMessage() {
+        async function sendMessage() {
             const content = elements.messageInput.value.trim();
             if (!content || !state.currentContact) return;
             
-            // 添加用户消息
-            const contactId = state.currentContact.id;
-            const messageId = Date.now();
+            // 创建用户消息对象
             const userMessage = {
-                id: messageId,
+                id: Date.now(),
                 content: content,
-                isAI: false,
+                isUser: true,
                 time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
             };
             
-            if (!state.messages[contactId]) state.messages[contactId] = [];
+            // 添加到DOM
+            addMessageToDOM(userMessage);
+            
+            // 保存到状态
+            const contactId = state.currentContact.id;
+            if (!state.messages[contactId]) {
+                state.messages[contactId] = [];
+            }
             state.messages[contactId].push(userMessage);
             
             // 更新联系人预览
@@ -838,172 +1604,340 @@
             elements.messageInput.value = '';
             autoResizeTextarea();
             
-            // 渲染消息
-            renderMessages(contactId);
+            // 更新联系人列表
             renderContacts();
+            saveToLocalStorage();
             
-            // 模拟AI回复
-            setTimeout(() => {
-                const replies = [
-                    "我在这里静静聆听...",
-                    "你的心声如庭院中的回声，悠远而清晰",
-                    "这座花园因你的到来而更加生动",
-                    "无论忙碌或闲暇，我都在这里守候",
-                    "说说看，今天的花园需要怎样的照料？",
-                    "夜空下的庭院格外宁静，适合倾诉心声"
-                ];
-                const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                
+            // 显示加载状态
+            const loadingMessage = {
+                id: Date.now() + 1,
+                content: '正在思考...',
+                isUser: false,
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            addMessageToDOM(loadingMessage);
+            
+            // 调用API
+            const aiResponse = await sendMessageToAPI(content, state.currentContact);
+            
+            // 移除加载消息
+            elements.chatContainer.removeChild(elements.chatContainer.lastChild);
+            
+            if (aiResponse) {
+                // 创建AI消息对象
                 const aiMessage = {
-                    id: Date.now() + 1,
-                    content: randomReply,
-                    isAI: true,
+                    id: Date.now() + 2,
+                    content: aiResponse,
+                    isUser: false,
                     time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
                 };
                 
+                // 添加到DOM
+                addMessageToDOM(aiMessage);
+                
+                // 保存到状态
                 state.messages[contactId].push(aiMessage);
-                renderMessages(contactId);
                 
                 // 更新联系人预览
-                state.currentContact.preview = randomReply;
+                state.currentContact.preview = aiResponse.length > 20 ? aiResponse.substring(0, 20) + '...' : aiResponse;
                 state.currentContact.lastTime = aiMessage.time;
+                
+                // 更新联系人列表
                 renderContacts();
-            }, 1000);
-        }
-
-        // 显示消息菜单
-        function showMessageMenu(e, message) {
-            const menu = elements.messageMenu;
-            menu.style.display = 'block';
-            menu.style.left = e.clientX + 'px';
-            menu.style.top = e.clientY + 'px';
-            
-            // 设置菜单按钮功能
-            document.getElementById('copyBtn').onclick = () => {
-                navigator.clipboard.writeText(message.content);
-                menu.style.display = 'none';
-            };
-            
-            document.getElementById('deleteBtn').onclick = () => {
-                const contactId = state.currentContact.id;
-                state.messages[contactId] = state.messages[contactId].filter(m => m.id !== message.id);
-                renderMessages(contactId);
-                menu.style.display = 'none';
-            };
-            
-            document.getElementById('rewriteBtn').onclick = () => {
-                const newContent = prompt('改写消息:', message.content);
-                if (newContent && newContent.trim()) {
-                    const contactId = state.currentContact.id;
-                    const msgIndex = state.messages[contactId].findIndex(m => m.id === message.id);
-                    if (msgIndex > -1) {
-                        state.messages[contactId][msgIndex].content = newContent;
-                        renderMessages(contactId);
-                    }
-                }
-                menu.style.display = 'none';
-            };
-            
-            document.getElementById('regenerateBtn').onclick = () => {
-                if (message.isAI) {
-                    const contactId = state.currentContact.id;
-                    const msgIndex = state.messages[contactId].findIndex(m => m.id === message.id);
-                    if (msgIndex > -1) {
-                        const replies = [
-                            "让我重新思考这个问题...",
-                            "换个角度来说...",
-                            "我有了新的理解...",
-                            "重新审视这个问题...",
-                            "让我尝试另一种表达..."
-                        ];
-                        const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                        state.messages[contactId][msgIndex].content = randomReply;
-                        renderMessages(contactId);
-                    }
-                }
-                menu.style.display = 'none';
-            };
-            
-            // 点击其他地方关闭菜单
-            setTimeout(() => {
-                const closeMenu = (clickEvent) => {
-                    if (!menu.contains(clickEvent.target)) {
-                        menu.style.display = 'none';
-                        document.removeEventListener('click', closeMenu);
-                    }
+                saveToLocalStorage();
+            } else {
+                // API调用失败，显示错误消息
+                const errorMessage = {
+                    id: Date.now() + 2,
+                    content: '抱歉，我暂时无法回复。请检查API配置或网络连接。',
+                    isUser: false,
+                    time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
                 };
-                document.addEventListener('click', closeMenu);
-            }, 10);
+                
+                addMessageToDOM(errorMessage);
+                state.messages[contactId].push(errorMessage);
+                saveToLocalStorage();
+            }
         }
 
-        // AI建议功能
-        function setupAISuggestions() {
-            const suggestions = [
-                "今天有什么有趣的事情吗？",
-                "给我讲个故事吧",
-                "如何保持内心的平静？",
-                "推荐一本好书",
-                "分享一个美好的回忆",
-                "最近有什么烦恼吗？",
-                "描述一下你理想中的花园",
-                "有什么想学习的新事物？"
+        // AI帮答功能
+        async function getAIHelpSuggestions() {
+            if (!state.currentContact) return;
+            
+            const currentInput = elements.messageInput.value.trim();
+            if (!currentInput) return;
+            
+            // 检查API配置
+            if (state.apiConfig.provider === 'custom') {
+                if (!state.apiConfig.url || !state.apiConfig.key) {
+                    showAPIStatus('请先配置API设置', 'error');
+                    return;
+                }
+            }
+            
+            // 构建提示词
+            const helpPrompt = state.appSettings.aiHelpPrompt;
+            const contactInstruction = state.currentContact.roleInstruction;
+            
+            // 构建消息历史
+            const messages = [
+                {
+                    role: 'system',
+                    content: contactInstruction + '\n\n' + helpPrompt
+                }
             ];
             
-            elements.lightbulb.addEventListener('click', function() {
-                if (elements.aiSuggestions.classList.contains('active')) {
-                    elements.aiSuggestions.classList.remove('active');
-                } else {
-                    elements.aiSuggestions.innerHTML = '';
-                    
-                    // 随机选择4个建议
-                    const shuffled = [...suggestions].sort(() => 0.5 - Math.random());
-                    const selected = shuffled.slice(0, 4);
-                    
-                    selected.forEach(suggestion => {
-                        const div = document.createElement('div');
-                        div.className = 'suggestion';
-                        div.textContent = suggestion;
-                        div.addEventListener('click', function() {
-                            elements.messageInput.value = this.textContent;
-                            autoResizeTextarea();
-                            elements.aiSuggestions.classList.remove('active');
-                            elements.messageInput.focus();
-                        });
-                        elements.aiSuggestions.appendChild(div);
-                    });
-                    
-                    elements.aiSuggestions.classList.add('active');
-                }
+            // 添加上下文
+            const contactId = state.currentContact.id;
+            const history = state.messages[contactId] || [];
+            const maxContext = Math.min(parseInt(state.appSettings.maxContextLength) || 5, 5);
+            const recentHistory = history.slice(-maxContext);
+            
+            recentHistory.forEach(msg => {
+                messages.push({
+                    role: msg.isUser ? 'user' : 'assistant',
+                    content: msg.content
+                });
             });
+            
+            // 添加当前输入
+            messages.push({
+                role: 'user',
+                content: `用户当前的输入是："${currentInput}"。请基于此生成回复建议。`
+            });
+            
+            try {
+                let response;
+                
+                if (state.apiConfig.provider === 'custom') {
+                    response = await fetch(state.apiConfig.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.apiConfig.key}`
+                        },
+                        body: JSON.stringify({
+                            model: state.apiConfig.model,
+                            messages: messages,
+                            temperature: 0.8,
+                            max_tokens: 200
+                        })
+                    });
+                } else {
+                    // 叙说AI
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const suggestionsText = data.choices?.[0]?.message?.content || '';
+                
+                // 解析建议文本（假设每行一个建议）
+                const suggestions = suggestionsText.split('\n')
+                    .map(s => s.trim().replace(/^\d+[\.\)]?\s*/, '')) // 移除数字前缀
+                    .filter(s => s.length > 5 && s.length < 50)
+                    .slice(0, 5);
+                
+                if (suggestions.length > 0) {
+                    showAISuggestions(suggestions);
+                }
+                
+            } catch (error) {
+                console.error('获取AI建议失败:', error);
+            }
+        }
+
+        // 显示AI建议
+        function showAISuggestions(suggestions) {
+            elements.aiSuggestions.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const div = document.createElement('div');
+                div.className = 'suggestion';
+                div.textContent = suggestion;
+                div.addEventListener('click', function() {
+                    elements.messageInput.value = this.textContent;
+                    autoResizeTextarea();
+                    elements.aiSuggestions.classList.remove('active');
+                    elements.messageInput.focus();
+                });
+                elements.aiSuggestions.appendChild(div);
+            });
+            
+            elements.aiSuggestions.classList.add('active');
+        }
+
+        // 显示API状态
+        function showAPIStatus(message, type = 'success') {
+            elements.apiStatus.textContent = message;
+            elements.apiStatus.className = `api-status ${type}`;
+            elements.apiStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                elements.apiStatus.style.display = 'none';
+            }, 3000);
+        }
+
+        // 获取可用模型
+        async function getAvailableModels() {
+            if (!state.apiConfig.url || !state.apiConfig.key) {
+                showAPIStatus('请先填写API地址和密钥', 'error');
+                return;
+            }
+            
+            try {
+                showAPIStatus('正在获取模型列表...', 'success');
+                
+                // 这里需要根据实际的API调整获取模型的端点
+                // 注意：不同API提供商获取模型的端点可能不同
+                const modelsUrl = state.apiConfig.url.replace('/chat/completions', '/models');
+                
+                const response = await fetch(modelsUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${state.apiConfig.key}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`获取模型失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const models = data.data || [];
+                
+                // 更新模型选择器
+                elements.modelSelect.innerHTML = '<option value="">选择模型</option>';
+                models.forEach(model => {
+                    if (model.id) {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.id;
+                        elements.modelSelect.appendChild(option);
+                    }
+                });
+                
+                elements.modelSelect.style.display = 'block';
+                state.apiConfig.availableModels = models.map(m => m.id);
+                showAPIStatus(`获取到 ${models.length} 个模型`, 'success');
+                
+            } catch (error) {
+                console.error('获取模型失败:', error);
+                showAPIStatus(`获取模型失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 更新API提供方显示
+        function updateApiProviderDisplay() {
+            const isCustom = elements.apiProvider.value === 'custom';
+            elements.customApiGroup.style.display = isCustom ? 'block' : 'none';
+            elements.customApiKeyGroup.style.display = isCustom ? 'block' : 'none';
+        }
+
+        // 保存API配置
+        function saveAPIConfig() {
+            state.apiConfig = {
+                provider: elements.apiProvider.value,
+                url: elements.apiUrl.value.trim(),
+                key: elements.apiKey.value.trim(),
+                model: elements.apiModel.value.trim() || 'gpt-3.5-turbo',
+                temperature: parseFloat(elements.temperature.value) || 0.7,
+                availableModels: state.apiConfig.availableModels || []
+            };
+            
+            saveToLocalStorage();
+            showAPIStatus('配置已保存', 'success');
+            
+            // 返回对话页面
+            showContactsView();
+        }
+
+        // 保存应用设置
+        function saveAppSettings() {
+            state.appSettings = {
+                maxContextLength: parseInt(elements.maxContextLength.value) || 10,
+                autoScroll: elements.autoScroll.checked,
+                aiHelpPrompt: elements.aiHelpPrompt.value.trim() || state.appSettings.aiHelpPrompt
+            };
+            
+            saveToLocalStorage();
+        }
+
+        // 创建聊天窗口
+        function createChat() {
+            const windowName = elements.windowName.value.trim();
+            const roleName = elements.roleName.value.trim();
+            
+            if (!windowName || !roleName) {
+                showAPIStatus('请填写窗口名称和角色名称', 'error');
+                return;
+            }
+            
+            const newContact = {
+                id: Date.now(),
+                name: windowName,
+                roleName: roleName,
+                roleDescription: elements.roleDescription.value.trim(),
+                roleInstruction: elements.roleInstruction.value.trim() || '你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。',
+                avatar: '💭',
+                preview: '开始新的对话...',
+                lastTime: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            state.contacts.push(newContact);
+            renderContacts();
+            saveToLocalStorage();
+            
+            // 重置表单
+            elements.windowName.value = '';
+            elements.roleName.value = '';
+            elements.roleDescription.value = '';
+            elements.roleInstruction.value = '';
+            
+            // 关闭模态框
+            elements.createChatModal.style.display = 'none';
+            
+            // 打开新聊天
+            openChat(newContact);
         }
 
         // 搜索功能
         function setupSearch() {
-            elements.navSearch.addEventListener('click', function() {
-                state.isSearchActive = !state.isSearchActive;
-                elements.searchContainer.style.display = state.isSearchActive ? 'block' : 'none';
-                if (state.isSearchActive) {
-                    elements.searchInput.focus();
+            // 对话设置按钮点击事件
+            elements.chatSettingsBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 切换搜索容器显示
+                const isSearchVisible = elements.searchContainer.style.display === 'flex';
+                
+                if (isSearchVisible) {
+                    // 如果搜索框已显示，隐藏它
+                    elements.searchContainer.style.display = 'none';
                 } else {
-                    closeSearch();
+                    // 如果搜索框未显示，显示它并聚焦
+                    elements.searchContainer.style.display = 'flex';
+                    elements.searchInput.focus();
                 }
             });
             
+            // 搜索输入事件
             elements.searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
-                if (searchTerm) {
-                    // 在所有消息中搜索
+                if (searchTerm && state.currentContact) {
+                    const contactId = state.currentContact.id;
+                    const messages = state.messages[contactId] || [];
+                    
+                    // 查找匹配的消息
                     state.searchResults = [];
-                    Object.keys(state.messages).forEach(contactId => {
-                        state.messages[contactId].forEach(msg => {
-                            if (msg.content.toLowerCase().includes(searchTerm)) {
-                                state.searchResults.push({
-                                    contactId: parseInt(contactId),
-                                    message: msg,
-                                    contact: state.contacts.find(c => c.id === parseInt(contactId))
-                                });
-                            }
-                        });
+                    messages.forEach(msg => {
+                        if (msg.content.toLowerCase().includes(searchTerm)) {
+                            state.searchResults.push(msg);
+                        }
                     });
                     
                     // 显示搜索结果
@@ -1012,6 +1946,10 @@
                         elements.searchCount.textContent = `找到 ${state.searchResults.length} 个结果`;
                         state.currentSearchIndex = 0;
                         highlightCurrentSearchResult();
+                        
+                        // 更新导航按钮状态
+                        elements.prevResult.disabled = true;
+                        elements.nextResult.disabled = state.searchResults.length <= 1;
                     } else {
                         elements.searchResults.classList.remove('active');
                         state.currentSearchIndex = -1;
@@ -1021,51 +1959,75 @@
                 }
             });
             
+            // 取消搜索按钮
+            elements.searchCancelBtn.addEventListener('click', function() {
+                closeSearch();
+            });
+            
+            // 上一个结果按钮
             elements.prevResult.addEventListener('click', function() {
                 if (state.currentSearchIndex > 0) {
                     state.currentSearchIndex--;
                     highlightCurrentSearchResult();
+                    
+                    // 更新按钮状态
+                    elements.nextResult.disabled = false;
+                    if (state.currentSearchIndex === 0) {
+                        elements.prevResult.disabled = true;
+                    }
                 }
             });
             
+            // 下一个结果按钮
             elements.nextResult.addEventListener('click', function() {
                 if (state.currentSearchIndex < state.searchResults.length - 1) {
                     state.currentSearchIndex++;
                     highlightCurrentSearchResult();
+                    
+                    // 更新按钮状态
+                    elements.prevResult.disabled = false;
+                    if (state.currentSearchIndex === state.searchResults.length - 1) {
+                        elements.nextResult.disabled = true;
+                    }
                 }
+            });
+            
+            // 点击页面其他地方关闭搜索
+            document.addEventListener('click', function(e) {
+                if (!elements.searchContainer.contains(e.target) && 
+                    !elements.chatSettingsBtn.contains(e.target) &&
+                    !elements.searchResults.contains(e.target)) {
+                    closeSearch();
+                }
+            });
+            
+            // 阻止搜索容器内的点击事件冒泡
+            elements.searchContainer.addEventListener('click', function(e) {
+                e.stopPropagation();
             });
         }
         
         // 高亮当前搜索结果
         function highlightCurrentSearchResult() {
-            const result = state.searchResults[state.currentSearchIndex];
-            if (result) {
-                // 打开对应的聊天
-                const contact = state.contacts.find(c => c.id === result.contactId);
-                if (contact) {
-                    openChat(contact);
-                    
-                    // 高亮匹配的消息
-                    setTimeout(() => {
-                        const messages = document.querySelectorAll('.message');
-                        messages.forEach(msg => {
-                            msg.classList.remove('highlight');
-                            if (parseInt(msg.dataset.id) === result.message.id) {
-                                msg.classList.add('highlight');
-                                msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        });
-                        
-                        // 更新导航按钮状态
-                        elements.prevResult.disabled = state.currentSearchIndex === 0;
-                        elements.nextResult.disabled = state.currentSearchIndex === state.searchResults.length - 1;
-                    }, 100);
+            // 清除之前的高亮
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.classList.remove('highlight');
+            });
+            
+            // 高亮当前匹配项
+            if (state.currentSearchIndex >= 0 && state.currentSearchIndex < state.searchResults.length) {
+                const result = state.searchResults[state.currentSearchIndex];
+                const messageElement = document.querySelector(`.message[data-id="${result.id}"]`);
+                if (messageElement) {
+                    messageElement.classList.add('highlight');
+                    messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
         }
         
         // 关闭搜索
         function closeSearch() {
+            elements.searchContainer.style.display = 'none';
             elements.searchResults.classList.remove('active');
             elements.searchInput.value = '';
             state.searchResults = [];
@@ -1083,11 +2045,48 @@
             elements.messageInput.style.height = Math.min(elements.messageInput.scrollHeight, 120) + 'px';
         }
 
+        // 切换到步骤
+        function goToStep(step) {
+            state.currentStep = step;
+            
+            // 更新步骤指示器
+            elements.step1.classList.toggle('active', step === 1);
+            elements.step2.classList.toggle('active', step === 2);
+            
+            // 更新步骤容器
+            elements.stepContainer1.classList.toggle('active', step === 1);
+            elements.stepContainer2.classList.toggle('active', step === 2);
+        }
+
+        // 显示联系人视图
+        function showContactsView() {
+            elements.contactsView.style.display = 'flex';
+            elements.chatView.classList.remove('active');
+            elements.settingsView.style.display = 'none';
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            elements.navChat.classList.add('active');
+            
+            closeSearch();
+            renderContacts();
+        }
+
+        // 显示设置视图
+        function showSettingsView() {
+            elements.contactsView.style.display = 'none';
+            elements.chatView.classList.remove('active');
+            elements.settingsView.style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            elements.navSettings.classList.add('active');
+            
+            closeSearch();
+        }
+
         // 初始化应用
         function init() {
-            // 初始化数据
-            state.contacts = [...initialContacts];
-            state.messages = { ...initialMessages };
+            // 从LocalStorage加载数据
+            loadFromLocalStorage();
             
             // 设置时间
             updateTime();
@@ -1098,12 +2097,7 @@
             
             // 设置事件监听
             elements.backBtn.addEventListener('click', () => {
-                elements.chatHeader.style.display = 'none';
-                elements.chatMessages.style.display = 'none';
-                elements.contactListContainer.style.transform = 'translateX(0)';
-                elements.chatContainer.classList.remove('active');
-                state.currentContact = null;
-                renderContacts();
+                showContactsView();
             });
             
             elements.sendButton.addEventListener('click', sendMessage);
@@ -1117,33 +2111,88 @@
             
             elements.messageInput.addEventListener('input', autoResizeTextarea);
             
-            // 设置功能
-            setupAISuggestions();
-            setupSearch();
+            // 小灯泡点击事件（AI帮答）
+            elements.lightbulb.addEventListener('click', async function() {
+                if (elements.aiSuggestions.classList.contains('active')) {
+                    elements.aiSuggestions.classList.remove('active');
+                } else {
+                    await getAIHelpSuggestions();
+                }
+            });
             
             // 导航功能
             elements.navChat.addEventListener('click', () => {
-                // 如果当前在聊天界面，返回联系人列表
-                if (elements.chatContainer.classList.contains('active')) {
-                    elements.backBtn.click();
-                }
-                
-                // 更新导航状态
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                elements.navChat.classList.add('active');
-            });
-            
-            elements.navMemory.addEventListener('click', () => {
-                alert('回忆功能开发中...');
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                elements.navMemory.classList.add('active');
+                showContactsView();
             });
             
             elements.navSettings.addEventListener('click', () => {
-                alert('设置功能开发中...');
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                elements.navSettings.classList.add('active');
+                showSettingsView();
             });
+            
+            // 设置页面事件
+            elements.apiProvider.addEventListener('change', updateApiProviderDisplay);
+            elements.getModelsBtn.addEventListener('click', getAvailableModels);
+            elements.modelSelect.addEventListener('change', function() {
+                if (this.value) {
+                    elements.apiModel.value = this.value;
+                }
+            });
+            
+            elements.saveApiConfigBtn.addEventListener('click', saveAPIConfig);
+            
+            // 保存其他设置
+            elements.maxContextLength.addEventListener('change', saveAppSettings);
+            elements.autoScroll.addEventListener('change', saveAppSettings);
+            elements.aiHelpPrompt.addEventListener('change', saveAppSettings);
+            
+            // 创建聊天模态框事件
+            elements.addContactBtn.addEventListener('click', () => {
+                goToStep(1);
+                elements.createChatModal.style.display = 'flex';
+            });
+            
+            elements.closeCreateChatModal.addEventListener('click', () => {
+                elements.createChatModal.style.display = 'none';
+            });
+            
+            elements.cancelCreateBtn.addEventListener('click', () => {
+                elements.createChatModal.style.display = 'none';
+            });
+            
+            elements.nextStepBtn.addEventListener('click', () => {
+                const windowName = elements.windowName.value.trim();
+                if (!windowName) {
+                    showAPIStatus('请填写窗口名称', 'error');
+                    return;
+                }
+                goToStep(2);
+            });
+            
+            elements.prevStepBtn.addEventListener('click', () => {
+                goToStep(1);
+            });
+            
+            elements.createChatBtn.addEventListener('click', createChat);
+            
+            // 确认删除模态框事件
+            elements.cancelDeleteBtn.addEventListener('click', hideConfirmDeleteModal);
+            elements.confirmDeleteBtn.addEventListener('click', deleteContact);
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.createChatModal) {
+                    elements.createChatModal.style.display = 'none';
+                }
+                if (e.target === elements.confirmDeleteModal) {
+                    hideConfirmDeleteModal();
+                }
+            });
+            
+            // 设置功能
+            setupSearch();
+            
+            // 初始化API提供方显示
+            updateApiProviderDisplay();
         }
 
         // 启动应用
