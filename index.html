@@ -116,9 +116,6 @@
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
         }
 
         .chat-header-left {
@@ -151,15 +148,22 @@
             padding: 5px;
         }
 
-        /* 对话区域 */
-        .chat-container {
+        /* 聊天视图容器 */
+        .chat-view-container {
             flex: 1;
-            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            height: calc(100vh - 60px); /* 减去底部导航栏高度 */
+        }
+
+        /* 聊天消息容器 */
+        .chat-messages-container {
+            flex: 1;
             overflow-y: auto;
-            max-height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
         }
 
         .message {
@@ -204,8 +208,8 @@
             font-size: 13px;
         }
 
-        /* 输入区域 */
-        .input-section {
+        /* 输入区域 - 固定在聊天窗口底部 */
+        .chat-input-section {
             padding: 15px;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
@@ -310,7 +314,7 @@
             color: white;
         }
 
-        /* 底部导航 */
+        /* 底部导航 - 只在对话页面显示 */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -351,15 +355,15 @@
         }
 
         /* 滚动条样式 */
-        .chat-container::-webkit-scrollbar {
+        .chat-messages-container::-webkit-scrollbar {
             width: 4px;
         }
 
-        .chat-container::-webkit-scrollbar-track {
+        .chat-messages-container::-webkit-scrollbar-track {
             background: var(--bg-secondary);
         }
 
-        .chat-container::-webkit-scrollbar-thumb {
+        .chat-messages-container::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 2px;
         }
@@ -737,6 +741,16 @@
             display: flex;
         }
 
+        .settings-view {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .settings-view.active {
+            display: flex;
+        }
+
         /* 消息操作菜单 */
         .message-menu {
             position: absolute;
@@ -882,13 +896,13 @@
                 </div>
             </div>
 
-            <!-- 对话区域 -->
-            <div class="chat-container" id="chatContainer">
+            <!-- 聊天消息容器 -->
+            <div class="chat-messages-container" id="chatMessagesContainer">
                 <!-- 对话消息会动态添加在这里 -->
             </div>
 
-            <!-- 输入区域 -->
-            <div class="input-section">
+            <!-- 输入区域 - 固定在聊天窗口底部 -->
+            <div class="chat-input-section">
                 <div class="input-container">
                     <textarea 
                         class="message-input" 
@@ -912,7 +926,13 @@
         </div>
 
         <!-- 设置视图 -->
-        <div class="settings-view" id="settingsView" style="display: none;">
+        <div class="settings-view" id="settingsView">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="app-name">设置</div>
+                <div class="time" id="settingsTime">21:30</div>
+            </div>
+
             <div class="settings-container">
                 <!-- API配置 -->
                 <div class="settings-section">
@@ -989,8 +1009,8 @@
             </div>
         </div>
 
-        <!-- 底部导航 -->
-        <div class="bottom-nav">
+        <!-- 底部导航 - 只在对话和设置页面显示 -->
+        <div class="bottom-nav" id="bottomNav">
             <button class="nav-item active" id="navChat">
                 <i class="fas fa-comments nav-icon"></i>
                 <div>对话</div>
@@ -1082,14 +1102,13 @@
             searchResults: [],
             currentSearchIndex: -1,
             currentStep: 1,
-            contactToDelete: null,
-            touchStartX: 0,
-            touchEndX: 0
+            contactToDelete: null
         };
 
         // DOM元素
         const elements = {
             currentTime: document.getElementById('currentTime'),
+            settingsTime: document.getElementById('settingsTime'),
             contactsView: document.getElementById('contactsView'),
             chatView: document.getElementById('chatView'),
             settingsView: document.getElementById('settingsView'),
@@ -1099,13 +1118,14 @@
             chatTitle: document.getElementById('chatTitle'),
             backBtn: document.getElementById('backBtn'),
             chatSettingsBtn: document.getElementById('chatSettingsBtn'),
-            chatContainer: document.getElementById('chatContainer'),
+            chatMessagesContainer: document.getElementById('chatMessagesContainer'),
             messageInput: document.getElementById('messageInput'),
             sendButton: document.getElementById('sendButton'),
             lightbulb: document.getElementById('lightbulb'),
             aiSuggestions: document.getElementById('aiSuggestions'),
             navChat: document.getElementById('navChat'),
             navSettings: document.getElementById('navSettings'),
+            bottomNav: document.getElementById('bottomNav'),
             searchContainer: document.getElementById('searchContainer'),
             searchInput: document.getElementById('searchInput'),
             searchCancelBtn: document.getElementById('searchCancelBtn'),
@@ -1223,6 +1243,7 @@
             const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
                              now.getMinutes().toString().padStart(2, '0');
             elements.currentTime.textContent = timeString;
+            elements.settingsTime.textContent = timeString;
         }
 
         // 渲染联系人列表
@@ -1343,8 +1364,7 @@
             
             // 如果删除的是当前聊天窗口，返回联系人列表
             if (state.currentContact && state.currentContact.id === contactId) {
-                elements.chatView.classList.remove('active');
-                elements.contactsView.style.display = 'flex';
+                showContactsView();
                 state.currentContact = null;
             }
             
@@ -1362,13 +1382,13 @@
         // 渲染聊天消息
         function renderMessages(contactId) {
             const messages = state.messages[contactId] || [];
-            elements.chatContainer.innerHTML = '';
+            elements.chatMessagesContainer.innerHTML = '';
             
             if (messages.length === 0) {
                 const welcomeDiv = document.createElement('div');
                 welcomeDiv.className = 'welcome-message';
                 welcomeDiv.textContent = '开始新的对话...';
-                elements.chatContainer.appendChild(welcomeDiv);
+                elements.chatMessagesContainer.appendChild(welcomeDiv);
             } else {
                 messages.forEach(msg => {
                     addMessageToDOM(msg, false);
@@ -1381,7 +1401,7 @@
             }
         }
 
-        // 添加消息到DOM（不保存到历史记录）
+        // 添加消息到DOM
         function addMessageToDOM(message, shouldScroll = true) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.isUser ? 'user' : 'ai'}`;
@@ -1397,7 +1417,7 @@
                 showMessageMenu(e, message);
             });
             
-            elements.chatContainer.appendChild(messageDiv);
+            elements.chatMessagesContainer.appendChild(messageDiv);
             
             if (shouldScroll && state.appSettings.autoScroll) {
                 scrollToBottom();
@@ -1407,13 +1427,16 @@
         // 滚动到聊天底部
         function scrollToBottom() {
             setTimeout(() => {
-                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+                elements.chatMessagesContainer.scrollTop = elements.chatMessagesContainer.scrollHeight;
             }, 100);
         }
 
         // 打开聊天
         function openChat(contact) {
             state.currentContact = contact;
+            
+            // 隐藏底部导航栏
+            elements.bottomNav.style.display = 'none';
             
             // 切换视图
             elements.contactsView.style.display = 'none';
@@ -1451,7 +1474,7 @@
             menu.style.zIndex = '1000';
             
             // 计算菜单位置
-            const rect = elements.chatContainer.getBoundingClientRect();
+            const rect = elements.chatMessagesContainer.getBoundingClientRect();
             let x = e.clientX - rect.left;
             let y = e.clientY - rect.top;
             
@@ -1469,7 +1492,7 @@
                 <button class="menu-item delete-btn"><i class="fas fa-trash"></i>删除</button>
             `;
             
-            elements.chatContainer.appendChild(menu);
+            elements.chatMessagesContainer.appendChild(menu);
             
             // 设置点击事件
             menu.querySelector('.copy-btn').addEventListener('click', () => {
@@ -1505,9 +1528,6 @@
                     showAPIStatus('请先配置API设置', 'error');
                     return null;
                 }
-            } else {
-                // 叙说AI
-                showAPIStatus('使用叙说AI服务...', 'success');
             }
 
             // 构建消息历史
@@ -1554,8 +1574,7 @@
                         })
                     });
                 } else {
-                    // 叙说AI（这里需要替换为实际的叙说API地址）
-                    // 注意：这里只是示例，实际使用时需要正确的API地址
+                    // 叙说AI
                     showAPIStatus('叙说AI服务暂不可用，请使用自定义API', 'error');
                     return null;
                 }
@@ -1622,7 +1641,7 @@
             const aiResponse = await sendMessageToAPI(content, state.currentContact);
             
             // 移除加载消息
-            elements.chatContainer.removeChild(elements.chatContainer.lastChild);
+            elements.chatMessagesContainer.removeChild(elements.chatMessagesContainer.lastChild);
             
             if (aiResponse) {
                 // 创建AI消息对象
@@ -1725,7 +1744,6 @@
                         })
                     });
                 } else {
-                    // 叙说AI
                     return;
                 }
                 
@@ -1736,9 +1754,9 @@
                 const data = await response.json();
                 const suggestionsText = data.choices?.[0]?.message?.content || '';
                 
-                // 解析建议文本（假设每行一个建议）
+                // 解析建议文本
                 const suggestions = suggestionsText.split('\n')
-                    .map(s => s.trim().replace(/^\d+[\.\)]?\s*/, '')) // 移除数字前缀
+                    .map(s => s.trim().replace(/^\d+[\.\)]?\s*/, ''))
                     .filter(s => s.length > 5 && s.length < 50)
                     .slice(0, 5);
                 
@@ -1792,8 +1810,7 @@
             try {
                 showAPIStatus('正在获取模型列表...', 'success');
                 
-                // 这里需要根据实际的API调整获取模型的端点
-                // 注意：不同API提供商获取模型的端点可能不同
+                // 获取模型的端点（根据API提供商调整）
                 const modelsUrl = state.apiConfig.url.replace('/chat/completions', '/models');
                 
                 const response = await fetch(modelsUrl, {
@@ -2060,6 +2077,9 @@
 
         // 显示联系人视图
         function showContactsView() {
+            // 显示底部导航栏
+            elements.bottomNav.style.display = 'flex';
+            
             elements.contactsView.style.display = 'flex';
             elements.chatView.classList.remove('active');
             elements.settingsView.style.display = 'none';
@@ -2073,6 +2093,9 @@
 
         // 显示设置视图
         function showSettingsView() {
+            // 显示底部导航栏
+            elements.bottomNav.style.display = 'flex';
+            
             elements.contactsView.style.display = 'none';
             elements.chatView.classList.remove('active');
             elements.settingsView.style.display = 'block';
