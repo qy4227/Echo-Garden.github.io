@@ -41,7 +41,8 @@
         /* 移动端容器 */
         .app-container {
             max-width: 400px;
-            min-height: 100vh;
+            height: 100vh; /* 改为固定高度 */
+            min-height: 100vh; /* 保留这个以防万一 */
             margin: 0 auto;
             background: var(--bg-primary);
             position: relative;
@@ -150,11 +151,10 @@
 
         /* 聊天视图容器 */
         .chat-view-container {
-            flex: 1;
+            position: relative;
+            height: calc(100vh - 140px); /* 减去顶部栏和输入框高度 */
             display: flex;
             flex-direction: column;
-            height: 100%;
-            position: relative;
         }
 
         /* 聊天消息容器 */
@@ -165,7 +165,7 @@
             flex-direction: column;
             padding: 15px;
             gap: 15px;
-            padding-bottom: 80px; /* 为输入框留出空间 */
+             padding-bottom: 90px; /* 为输入框留出空间 */
         }
 
         .message {
@@ -210,7 +210,7 @@
             font-size: 13px;
         }
 
-        /* 输入区域 - 固定在聊天窗口底部 */
+        /* 输入区域 - 绝对定位在底部 */
         .chat-input-section {
             position: absolute;
             bottom: 0;
@@ -566,6 +566,7 @@
         /* 联系人列表样式 */
         .contact-list {
             flex: 1;
+            min-height: 0; /* 允许滚动 */
             overflow-y: auto;
             padding-bottom: 60px;
         }
@@ -656,6 +657,7 @@
         /* 设置页面样式 */
         .settings-container {
             flex: 1;
+            min-height: 0; /* 允许滚动 */
             overflow-y: auto;
             padding: 20px 15px 80px;
         }
@@ -730,11 +732,11 @@
             display: block;
         }
 
-        /* 视图切换 */
+        /* 联系人列表视图切换 */
         .contacts-view {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: 100%;  /* 继承父容器高度 */
         }
 
         .chat-view {
@@ -750,7 +752,7 @@
         .settings-view {
             display: none;
             flex-direction: column;
-            height: 100%;
+            height: 100%;  /* 继承父容器高度 */
         }
 
         .settings-view.active {
