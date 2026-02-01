@@ -1532,7 +1532,7 @@
             }, 10);
         }
 
-        // 发送消息到API
+        // 发送消息到API - 修复版本
         async function sendMessageToAPI(userMessage, contact) {
             // 检查API配置
             if (state.apiConfig.provider === 'custom') {
@@ -1569,42 +1569,241 @@
             });
 
             try {
+                console.log('发送API请求:', {
+                    url: state.apiConfig.url,
+                    model: state.apiConfig.model,
+                    temperature: state.apiConfig.temperature,
+                    messagesCount: messages.length
+                });
+
                 let response;
                 
                 if (state.apiConfig.provider === 'custom') {
-                    // 自定义API
+                    // 自定义API - 兼容不同API提供商的格式
+                    const requestBody = {
+                        model: state.apiConfig.model,
+                        messages: messages,
+                        temperature: parseFloat(state.apiConfig.temperature) || 0.7,
+                        max_tokens: 2048,
+                        stream: false
+                    };
+
+                    console.log('请求体:', JSON.stringify(requestBody, null, 2));
+
+                    // 添加超时设置
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
+
                     response = await fetch(state.apiConfig.url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${state.apiConfig.key}`
                         },
-                        body: JSON.stringify({
-                            model: state.apiConfig.model,
-                            messages: messages,
-                            temperature: parseFloat(state.apiConfig.temperature),
-                            max_tokens: 2048
-                        })
+                        body: JSON.stringify(requestBody),
+                        signal: controller.signal
                     });
+
+                    clearTimeout(timeoutId);
+
+                    console.log('响应状态:', response.status);
+                    console.log('响应状态文本:', response.statusText);
+                    console.log('响应头:', Object.fromEntries(response.headers.entries()));
+
+                    // 先获取原始响应文本
+                    const responseText = await response.text();
+                    console.log('原始响应文本:', responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''));
+
+                    if (!response.ok) {
+                        // 尝试解析错误信息
+                        let errorMessage = `API请求失败: ${response.status} ${response.statusText}`;
+                        try {
+                            const errorData = JSON.parse(responseText);
+                            errorMessage += ` - ${JSON.stringify(errorData)}`;
+                        } catch (e) {
+                            // 如果不是JSON，使用原始文本
+                            errorMessage += ` - ${responseText.substring(0, 200)}`;
+                        }
+                        throw new Error(errorMessage);
+                    }
+
+                    // 尝试解析JSON
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('JSON解析失败，原始响应:', responseText);
+                        
+                        // 检查是否返回了HTML页面
+                        if (responseText.includes('<!DOCTYPE') || 
+                            responseText.includes('<html') || 
+                            responseText.includes('HTTP') ||
+                            responseText.includes('nginx') ||
+                            responseText.includes('Apache')) {
+                            throw new Error('API返回了HTML页面，请检查API地址是否正确');
+                        }
+                        
+                        // 如果不是JSON，尝试从纯文本中提取信息
+                        if (responseText.trim().length > 0) {
+                            // 返回原始文本作为回复
+                            return responseText.trim();
+                        }
+                        
+                        throw new Error('API返回了无效的JSON格式');
+                    }
+                    
+                    console.log('解析后的数据:', data);
+
+                    // 兼容不同API响应格式
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        return data.choices[0].message.content;
+                    } else if (data.choices && data.choices[0] && data.choices[0].text) {
+                        return data.choices[0].text;
+                    } else if (data.response) {
+                        return data.response;
+                    } else if (data.content) {
+                        return data.content;
+                    } else if (data.message) {
+                        return data.message;
+                    } else if (data.result) {
+                        return data.result;
+                    } else if (data.text) {
+                        return data.text;
+                    } else if (data.answer) {
+                        return data.answer;
+                    } else if (data.reply) {
+                        return data.reply;
+                    } else if (data.assistant) {
+                        return data.assistant;
+                    } else {
+                        console.error('未知的响应格式:', data);
+                        // 尝试从data对象中查找任何字符串值
+                        for (const key in data) {
+                            if (typeof data[key] === 'string' && data[key].length > 0) {
+                                return data[key];
+                            }
+                        }
+                        return '收到。';
+                    }
                 } else {
                     // 叙说AI
                     showAPIStatus('叙说AI服务暂不可用，请使用自定义API', 'error');
                     return null;
                 }
 
-                if (!response.ok) {
-                    throw new Error(`API请求失败: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data.choices?.[0]?.message?.content || data.content || '收到。';
             } catch (error) {
-                console.error('API调用错误:', error);
-                showAPIStatus(`API调用失败: ${error.message}`, 'error');
+                console.error('API调用详细错误:', error);
+                
+                // 提供更具体的错误信息
+                if (error.name === 'AbortError') {
+                    showAPIStatus('请求超时，请检查网络连接或API地址', 'error');
+                } else if (error.message.includes('CORS')) {
+                    showAPIStatus('跨域请求被阻止，请确保API支持CORS', 'error');
+                } else if (error.message.includes('HTML页面')) {
+                    showAPIStatus('API返回了HTML页面，请检查API地址是否正确', 'error');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showAPIStatus('网络连接失败，请检查API地址或网络连接', 'error');
+                } else {
+                    showAPIStatus(`API调用失败: ${error.message}`, 'error');
+                }
+                
                 return null;
             }
         }
 
+        // 在设置页面添加调试工具
+        function addDebugTools() {
+            // 在API配置部分添加测试按钮
+            const testApiBtn = document.createElement('button');
+            testApiBtn.className = 'btn btn-secondary';
+            testApiBtn.id = 'testApiConnectionBtn';
+            testApiBtn.innerHTML = '<i class="fas fa-vial"></i> 测试连接';
+            testApiBtn.style.marginTop = '10px';
+            testApiBtn.style.width = '100%';
+            
+            // 插入到保存按钮之前
+            const apiSection = document.querySelector('.settings-section');
+            const saveBtn = document.getElementById('saveApiConfigBtn');
+            apiSection.insertBefore(testApiBtn, saveBtn);
+            
+            // 测试连接功能
+            testApiBtn.addEventListener('click', async function() {
+                if (!elements.apiUrl.value.trim() || !elements.apiKey.value.trim()) {
+                    showAPIStatus('请填写API地址和密钥', 'error');
+                    return;
+                }
+                
+                showAPIStatus('正在测试连接...', 'success');
+                
+                try {
+                    // 发送一个简单的测试请求
+                    const testMessages = [
+                        {
+                            role: 'user',
+                            content: '你好'
+                        }
+                    ];
+                    
+                    const requestBody = {
+                        model: elements.apiModel.value.trim() || 'gpt-3.5-turbo',
+                        messages: testMessages,
+                        temperature: 0.7,
+                        max_tokens: 50,
+                        stream: false
+                    };
+                    
+                    console.log('测试请求:', requestBody);
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    
+                    const response = await fetch(elements.apiUrl.value.trim(), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${elements.apiKey.value.trim()}`
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    const responseText = await response.text();
+                    console.log('测试响应:', responseText.substring(0, 500));
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 200)}`);
+                    }
+                    
+                    // 尝试解析JSON
+                    try {
+                        const data = JSON.parse(responseText);
+                        showAPIStatus('连接测试成功！', 'success');
+                        console.log('测试成功，响应数据:', data);
+                    } catch (e) {
+                        if (responseText.trim().length > 0) {
+                            showAPIStatus('连接成功，但返回的不是标准JSON格式', 'success');
+                        } else {
+                            throw new Error('API返回了空响应');
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('测试连接失败:', error);
+                    showAPIStatus(`测试失败: ${error.message}`, 'error');
+                }
+            });
+        }
+        // 在初始化函数中调用
+        function init() {
+            // ... 其他初始化代码 ...
+            
+            // 添加调试工具
+            addDebugTools();
+            
+            // ... 其他初始化代码 ...
+        }
         // 发送消息
         async function sendMessage() {
             const content = elements.messageInput.value.trim();
@@ -1839,6 +2038,8 @@
                         modelsUrl = baseUrl + '/models';
                     }
                 }
+                
+                console.log('尝试获取模型的URL:', modelsUrl);
                 
                 const response = await fetch(modelsUrl, {
                     method: 'GET',
