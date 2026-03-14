@@ -3,28 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>回声庭院 - 你的心灵花园</title>
+    <title>回声庭院 - 许你一隅，进退由心</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 添加html2canvas库 - 用于生成长图 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* =========================================================================
+         * 全局样式与变量定义
+         * 作用：定义整个应用的颜色主题、基础布局和通用样式
+         * 使用场景：所有页面共享的样式规则
+         * ========================================================================= */
+        
+        /* 基础重置 - 移除所有元素的默认边距和内边距 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* 颜色变量 - 统一管理主题色，方便后续修改主题 */
         :root {
-            --bg-primary: #1a1f2c;
-            --bg-secondary: #252a38;
-            --bg-card: #2d3748;
-            --accent-primary: #38b2ac;
-            --accent-secondary: #ed8936;
-            --accent-glow: #4fd1c7;
-            --text-primary: #e2e8f0;
-            --text-secondary: #94a3b8;
-            --text-muted: #718096;
-            --border-color: #2d3748;
+            --bg-primary: #1a1f2c;      /* 主背景色 - 深蓝灰色 */
+            --bg-secondary: #252a38;     /* 次要背景色 - 稍浅的蓝灰色 */
+            --bg-card: #2d3748;           /* 卡片背景色 - 用于消息气泡、输入框等 */
+            --accent-primary: #38b2ac;    /* 主色调 - 青绿色，用于重要按钮和选中状态 */
+            --accent-secondary: #ed8936;   /* 辅助色调 - 橙色，用于灯泡图标等 */
+            --accent-glow: #4fd1c7;        /* 高亮色 - 更亮的青绿色，用于悬停效果 */
+            --text-primary: #e2e8f0;       /* 主要文字颜色 - 浅灰色 */
+            --text-secondary: #94a3b8;     /* 次要文字颜色 - 中灰色 */
+            --text-muted: #718096;          /* 浅色文字 - 深灰色，用于提示文字 */
+            --border-color: #2d3748;        /* 边框颜色 - 与卡片背景色相同 */
             --shadow-color: rgba(26, 31, 44, 0.8);
-            --danger-color: #ff3b30;
+            --danger-color: #ff3b30;        /* 危险颜色 - 红色，用于删除操作 */
         }
 
         body {
@@ -33,34 +44,43 @@
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
             min-height: 100vh;
+            /* 背景渐变 - 营造庭院氛围 */
             background-image: 
                 radial-gradient(circle at 20% 80%, rgba(56, 178, 172, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(237, 137, 54, 0.05) 0%, transparent 50%);
         }
 
-        /* 移动端容器 */
+        /* =========================================================================
+         * 移动端主容器
+         * 作用：模拟手机屏幕，限制最大宽度，创建全屏应用体验
+         * 使用场景：整个应用的根容器
+         * ========================================================================= */
         .app-container {
-            max-width: 400px;
-            height: 100vh; /* 改为固定高度 */
-            min-height: 100vh; /* 保留这个以防万一 */
-            margin: 0 auto;
+            max-width: 400px;            /* 限制最大宽度，模拟手机屏幕 */
+            height: 100vh;                /* 固定高度，占满整个视口 */
+            min-height: 100vh;            /* 备用高度 */
+            margin: 0 auto;               /* 水平居中 */
             background: var(--bg-primary);
             position: relative;
-            overflow: hidden;
+            overflow: hidden;              /* 隐藏溢出内容 */
             display: flex;
-            flex-direction: column;
+            flex-direction: column;        /* 垂直布局 */
         }
 
-        /* 状态栏 */
-        .status-bar {
+        /* =========================================================================
+         * 状态栏样式
+         * 作用：显示应用名称和当前时间
+         * 使用场景：每个页面的顶部
+         * ========================================================================= */
+        /* .status-bar {
             padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: var(--bg-primary);
-            flex-shrink: 0;
+            flex-shrink: 0;               //防止被压缩 
             border-bottom: 1px solid var(--border-color);
-        }
+        }  */
 
         .app-name {
             font-size: 16px;
@@ -74,7 +94,11 @@
             color: var(--text-muted);
         }
 
-        /* 联系人标题栏 */
+        /* =========================================================================
+         * 联系人标题栏
+         * 作用：显示"对话"标题和添加按钮
+         * 使用场景：联系人列表页面顶部
+         * ========================================================================= */
         .contacts-header {
             padding: 15px;
             display: flex;
@@ -108,7 +132,11 @@
             transform: scale(1.1);
         }
 
-        /* 聊天头部 */
+        /* =========================================================================
+         * 聊天头部样式
+         * 作用：显示返回按钮、聊天标题和设置按钮
+         * 使用场景：聊天页面顶部
+         * ========================================================================= */
         .chat-header {
             padding: 15px;
             display: flex;
@@ -149,51 +177,64 @@
             padding: 5px;
         }
 
-        /* 聊天视图容器 */
+        /* =========================================================================
+         * 聊天视图容器
+         * 作用：包含消息列表和输入框的容器
+         * 使用场景：聊天页面主体
+         * ========================================================================= */
         .chat-view-container {
             position: relative;
-            height: calc(100vh - 140px); /* 减去顶部栏和输入框高度 */
+            height: calc(100vh - 140px);   /* 减去顶部栏和输入框高度 */
             display: flex;
             flex-direction: column;
         }
 
-        /* 聊天消息容器 */
+        /* =========================================================================
+         * 聊天消息容器
+         * 作用：显示所有聊天消息的区域，支持滚动
+         * 使用场景：聊天页面显示消息的部分
+         * ========================================================================= */
         .chat-messages-container {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto;               /* 垂直滚动 */
             display: flex;
             flex-direction: column;
             padding: 15px;
-            gap: 15px;
-             padding-bottom: 90px; /* 为输入框留出空间 */
+            gap: 15px;                      /* 消息之间的间距 */
+            padding-bottom: 90px;            /* 为输入框留出空间 */
         }
 
+        /* =========================================================================
+         * 消息气泡样式
+         * 作用：定义用户和AI消息的不同样式
+         * 使用场景：聊天中的每条消息
+         * ========================================================================= */
         .message {
-            max-width: 85%;
+            max-width: 85%;                  /* 消息最大宽度，避免太宽 */
             padding: 12px 16px;
             border-radius: 18px;
             font-size: 14px;
             line-height: 1.4;
             position: relative;
             transition: all 0.3s ease;
-            word-wrap: break-word;
+            word-wrap: break-word;            /* 长单词换行 */
             overflow-wrap: break-word;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.3s ease;      /* 淡入动画 */
         }
 
         .message.user {
-            align-self: flex-end;
+            align-self: flex-end;              /* 用户消息靠右 */
             background: var(--accent-primary);
             color: white;
-            border-bottom-right-radius: 6px;
+            border-bottom-right-radius: 6px;   /* 右下角小圆角，形成气泡效果 */
         }
 
         .message.ai {
-            align-self: flex-start;
+            align-self: flex-start;             /* AI消息靠左 */
             background: var(--bg-card);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            border-bottom-left-radius: 6px;
+            border-bottom-left-radius: 6px;     /* 左下角小圆角 */
         }
 
         .message.highlight {
@@ -210,7 +251,196 @@
             font-size: 13px;
         }
 
-        /* 输入区域 - 绝对定位在底部 */
+        /* =========================================================================
+        * 消息时间样式
+        * 作用：显示在AI消息左下角的时间
+        * AI消息：时间显示在左下角
+        * 用户消息：时间显示在右下角
+        * 使用场景：AI消息中显示发送时间
+        * ========================================================================= */
+        .message-time {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-align: left;
+            opacity: 0.8;
+        }
+
+        /* AI消息时间 - 左对齐 */
+        .message.ai .message-time {
+            text-align: left;
+        }
+
+        /* 用户消息时间 - 右对齐 */
+        .message.user .message-time {
+            text-align: right;
+        }
+        /* =========================================================================
+         * 聊天设置菜单样式
+         * 作用：美化聊天设置菜单的显示效果
+         * 使用场景：点击聊天设置按钮时显示
+         * ========================================================================= */
+         .chat-settings-menu {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .chat-settings-menu .menu-item:hover {
+            background: var(--bg-card);
+        }
+
+                /* =========================================================================
+         * 保存聊天记录模态框中的消息项样式
+         * 作用：完全复用聊天窗口的消息气泡样式，支持点击选中
+         * 使用场景：在保存聊天记录的模态框中显示可选的聊天消息
+         * ========================================================================= */
+         .save-messages-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+        }
+
+        .save-message-wrapper {
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-message-wrapper.selected .message {
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 0 15px rgba(56, 178, 172, 0.3);
+            transform: scale(1.02);
+        }
+
+        .save-message-wrapper.selected .message.user {
+            border: 2px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .save-message-wrapper .message {
+            max-width: 100%;  /* 在模态框中允许更宽 */
+            margin-bottom: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;  /* 让点击事件穿透到wrapper */
+        }
+
+        .save-message-checkbox {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;  /* 让点击事件穿透到wrapper */
+        }
+
+        .save-message-wrapper.user-message .save-message-checkbox {
+            right: -10px;  /* 用户消息的复选框放在右侧 */
+        }
+
+        .save-message-wrapper.ai-message .save-message-checkbox {
+            left: -10px;  /* AI消息的复选框放在左侧 */
+        }
+
+        .save-message-wrapper:hover .save-message-checkbox {
+            opacity: 0.5;
+        }
+
+        .save-message-wrapper.selected .save-message-checkbox {
+            opacity: 1;
+            background: var(--accent-primary);
+        }
+
+        .save-message-wrapper.selected .save-message-checkbox i {
+            display: block;
+        }
+
+        .save-message-wrapper .message-content {
+            word-break: break-word;
+        }
+
+        /* =========================================================================
+         * 聊天设置菜单样式
+         * 作用：美化聊天设置菜单的显示效果
+         * 使用场景：点击聊天设置按钮时显示
+         * ========================================================================= */
+         .chat-settings-menu {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .chat-settings-menu .menu-item:hover {
+            background: var(--bg-card);
+        }
+
+        /* =========================================================================
+         * 保存聊天记录模态框中的消息项样式
+         * 作用：完全复用聊天窗口的消息气泡样式，支持点击选中
+         * 使用场景：在保存聊天记录的模态框中显示可选的聊天消息
+         * ========================================================================= */
+         .save-messages-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+        }
+
+        .save-message-wrapper {
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .save-message-wrapper.selected .message {
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 0 15px rgba(56, 178, 172, 0.3);
+            transform: scale(1.02);
+        }
+
+        .save-message-wrapper.selected .message.user {
+            border: 2px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .save-message-wrapper .message {
+            max-width: 100%;  /* 在模态框中允许更宽 */
+            margin-bottom: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;  /* 让点击事件穿透到wrapper */
+        }
+
+        .save-message-wrapper .message-content {
+            word-break: break-word;
+        }
+
+        /* =========================================================================
+         * 输入区域样式
+         * 作用：固定在底部的消息输入框和发送按钮
+         * 使用场景：聊天页面底部
+         * ========================================================================= */
         .chat-input-section {
             position: absolute;
             bottom: 0;
@@ -225,7 +455,7 @@
         .input-container {
             display: flex;
             gap: 10px;
-            align-items: end;
+            align-items: end;                /* 底部对齐 */
         }
 
         .message-input {
@@ -236,7 +466,7 @@
             padding: 12px 18px;
             color: var(--text-primary);
             font-size: 14px;
-            resize: none;
+            resize: none;                    /* 禁止手动调整大小 */
             max-height: 120px;
             min-height: 44px;
         }
@@ -290,7 +520,11 @@
             transform: scale(1.05);
         }
 
-        /* AI建议区域 */
+        /* =========================================================================
+         * AI建议区域样式
+         * 作用：显示AI生成的回复建议
+         * 使用场景：点击灯泡图标后
+         * ========================================================================= */
         .ai-suggestions {
             display: none;
             flex-wrap: wrap;
@@ -300,7 +534,7 @@
         }
 
         .ai-suggestions.active {
-            display: flex;
+            display: flex;                    /* 激活时显示 */
         }
 
         .suggestion {
@@ -311,7 +545,7 @@
             font-size: 12px;
             color: var(--text-secondary);
             cursor: pointer;
-            white-space: nowrap;
+            white-space: nowrap;               /* 不换行 */
             transition: all 0.3s ease;
         }
 
@@ -320,7 +554,11 @@
             color: white;
         }
 
-        /* 底部导航 - 只在对话页面显示 */
+        /* =========================================================================
+         * 底部导航样式
+         * 作用：页面切换导航栏
+         * 使用场景：联系人列表和设置页面底部
+         * ========================================================================= */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -348,7 +586,7 @@
         }
 
         .nav-item.active {
-            color: var(--accent-primary);
+            color: var(--accent-primary);      /* 激活状态 */
         }
 
         .nav-item.highlight {
@@ -360,7 +598,11 @@
             margin-bottom: 2px;
         }
 
-        /* 滚动条样式 */
+        /* =========================================================================
+         * 滚动条样式
+         * 作用：美化消息列表的滚动条
+         * 使用场景：聊天消息区域
+         * ========================================================================= */
         .chat-messages-container::-webkit-scrollbar {
             width: 4px;
         }
@@ -374,13 +616,21 @@
             border-radius: 2px;
         }
 
-        /* 动画效果 */
+        /* =========================================================================
+         * 动画效果
+         * 作用：消息出现时的淡入动画
+         * 使用场景：新消息添加到DOM时
+         * ========================================================================= */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 花园装饰元素 */
+        /* =========================================================================
+         * 花园装饰元素
+         * 作用：增加氛围感的背景装饰
+         * 使用场景：所有页面背景
+         * ========================================================================= */
         .decoration {
             position: absolute;
             font-size: 12px;
@@ -392,12 +642,16 @@
         .decoration-2 { top: 25%; right: 8%; }
         .decoration-3 { bottom: 30%; left: 5%; }
 
-        /* 搜索结果导航 */
+        /* =========================================================================
+         * 搜索结果导航样式
+         * 作用：显示搜索框和搜索结果导航
+         * 使用场景：聊天页面点击设置按钮后
+         * ========================================================================= */
         .search-container {
             padding: 10px 15px;
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
-            display: none;
+            display: none;                    /* 默认隐藏 */
             align-items: center;
             gap: 10px;
             flex-shrink: 0;
@@ -457,7 +711,11 @@
             cursor: not-allowed;
         }
 
-        /* 模态框 */
+        /* =========================================================================
+         * 模态框样式
+         * 作用：创建聊天和删除确认的弹窗
+         * 使用场景：点击添加按钮或删除时
+         * ========================================================================= */
         .modal {
             display: none;
             position: fixed;
@@ -503,6 +761,11 @@
             cursor: pointer;
         }
 
+        /* =========================================================================
+         * 表单样式
+         * 作用：定义输入框、选择框等表单元素样式
+         * 使用场景：设置页面和创建聊天模态框
+         * ========================================================================= */
         .form-group {
             margin-bottom: 15px;
         }
@@ -563,10 +826,14 @@
             background: var(--border-color);
         }
 
-        /* 联系人列表样式 */
+        /* =========================================================================
+         * 联系人列表样式
+         * 作用：显示所有聊天窗口的列表
+         * 使用场景：联系人列表页面
+         * ========================================================================= */
         .contact-list {
             flex: 1;
-            min-height: 0; /* 允许滚动 */
+            min-height: 0;
             overflow-y: auto;
             padding-bottom: 60px;
         }
@@ -623,7 +890,11 @@
             text-overflow: ellipsis;
         }
 
-        /* 滑动删除样式 */
+        /* =========================================================================
+         * 滑动删除样式
+         * 作用：支持左滑显示删除按钮
+         * 使用场景：联系人列表中的每个项目
+         * ========================================================================= */
         .contact-item-wrapper {
             display: flex;
             align-items: center;
@@ -654,10 +925,14 @@
             transform: translateX(-80px);
         }
 
-        /* 设置页面样式 */
+        /* =========================================================================
+         * 设置页面样式
+         * 作用：应用设置和API配置页面
+         * 使用场景：点击底部导航"设置"
+         * ========================================================================= */
         .settings-container {
             flex: 1;
-            min-height: 0; /* 允许滚动 */
+            min-height: 0;
             overflow-y: auto;
             padding: 20px 15px 80px;
         }
@@ -685,7 +960,11 @@
             color: var(--accent-primary);
         }
 
-        /* API状态 */
+        /* =========================================================================
+         * API状态提示样式
+         * 作用：显示API连接状态和错误信息
+         * 使用场景：设置页面保存配置或测试连接时
+         * ========================================================================= */
         .api-status {
             margin-top: 10px;
             padding: 8px 12px;
@@ -704,7 +983,11 @@
             color: #ff3b30;
         }
 
-        /* 步骤指示器 */
+        /* =========================================================================
+         * 步骤指示器样式
+         * 作用：显示创建聊天窗口的步骤
+         * 使用场景：创建聊天模态框
+         * ========================================================================= */
         .step-indicator {
             display: flex;
             justify-content: center;
@@ -723,7 +1006,11 @@
             background: var(--accent-primary);
         }
 
-        /* 步骤容器 */
+        /* =========================================================================
+         * 步骤容器
+         * 作用：切换显示不同的步骤表单
+         * 使用场景：创建聊天模态框
+         * ========================================================================= */
         .step-container {
             display: none;
         }
@@ -732,11 +1019,15 @@
             display: block;
         }
 
-        /* 联系人列表视图切换 */
+        /* =========================================================================
+         * 视图切换
+         * 作用：控制不同页面的显示/隐藏
+         * 使用场景：联系人列表、聊天、设置页面
+         * ========================================================================= */
         .contacts-view {
             display: flex;
             flex-direction: column;
-            height: 100%;  /* 继承父容器高度 */
+            height: 100%;
         }
 
         .chat-view {
@@ -752,14 +1043,18 @@
         .settings-view {
             display: none;
             flex-direction: column;
-            height: 100%;  /* 继承父容器高度 */
+            height: 100%;
         }
 
         .settings-view.active {
             display: flex;
         }
 
-        /* 消息操作菜单 */
+        /* =========================================================================
+         * 消息操作菜单样式
+         * 作用：右键点击消息时弹出的操作菜单
+         * 使用场景：聊天页面右键点击消息
+         * ========================================================================= */
         .message-menu {
             position: absolute;
             background: var(--bg-secondary);
@@ -795,7 +1090,11 @@
             width: 16px;
         }
 
-        /* 确认删除模态框 */
+        /* =========================================================================
+         * 确认删除模态框样式
+         * 作用：删除联系人前的确认弹窗
+         * 使用场景：滑动删除点击删除按钮后
+         * ========================================================================= */
         .confirm-delete-modal {
             background: var(--bg-secondary);
             border-radius: 15px;
@@ -843,24 +1142,85 @@
         .confirm-delete-btn.delete:hover {
             background: #ff1a1a;
         }
+
+        /* =========================================================================
+        * 保存模态框搜索样式
+        * 作用：确保保存模态框中的搜索栏和搜索结果与主界面样式一致
+        * ========================================================================= */
+        #saveSearchContainer {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #saveSearchInput {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        #saveSearchInput:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        #saveSearchCancelBtn {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        #saveSearchResults {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        #saveSearchResults.active {
+            display: flex;
+        }
+
+        .save-message-wrapper.highlight {
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 0 15px rgba(56, 178, 172, 0.5);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* 确保高亮时复选框不影响显示 */
+        .save-message-wrapper.highlight .message {
+            border-color: var(--accent-primary);
+        }        
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 装饰元素 -->
-        <div class="decoration decoration-1">🌙</div>
-        <div class="decoration decoration-2">⭐</div>
-        <div class="decoration decoration-3">✨</div>
-
-        <!-- 联系人列表视图 -->
+        <!-- =========================================================================
+         * 联系人列表视图
+         * 作用：显示所有聊天窗口的列表页面
+         * 包含：状态栏、标题栏、联系人列表
+         * ========================================================================= -->
         <div class="contacts-view" id="contactsView">
-            <!-- 状态栏 -->
+            <!-- 状态栏：显示应用名称和当前时间
             <div class="status-bar">
                 <div class="app-name">回声庭院</div>
                 <div class="time" id="currentTime">21:30</div>
-            </div>
+            </div> -->
 
-            <!-- 联系人标题栏 -->
+            <!-- 联系人标题栏：标题和添加按钮 -->
             <div class="contacts-header">
                 <div class="contacts-title">对话</div>
                 <button class="add-contact-btn" id="addContactBtn" title="新建对话">
@@ -868,15 +1228,19 @@
                 </button>
             </div>
 
-            <!-- 联系人列表 -->
+            <!-- 联系人列表：动态生成的联系人项目 -->
             <div class="contact-list" id="contactList">
                 <!-- 联系人将动态添加到这里 -->
             </div>
         </div>
 
-        <!-- 聊天视图 -->
+        <!-- =========================================================================
+         * 聊天视图
+         * 作用：与AI对话的主要界面
+         * 包含：聊天头部、搜索栏、消息区域、输入区域
+         * ========================================================================= -->
         <div class="chat-view" id="chatView">
-            <!-- 聊天头部 -->
+            <!-- 聊天头部：返回按钮、聊天标题、设置按钮 -->
             <div class="chat-header" id="chatHeader">
                 <div class="chat-header-left">
                     <button class="back-btn" id="backBtn">
@@ -884,18 +1248,38 @@
                     </button>
                     <div class="chat-title" id="chatTitle">聊天</div>
                 </div>
+
+            <!-- =========================================================================
+            * 聊天设置菜单
+            * 作用：点击设置按钮后弹出的功能菜单
+            * 包含：搜索聊天记录、保存聊天记录两个选项
+            * ========================================================================= -->       
                 <button class="chat-settings-btn" id="chatSettingsBtn">
-                    <i class="fas fa-ellipsis-h"></i>
+                    <i class="fas fa-ellipsis-h"></i>  <!-- 三个点的图标，适合做菜单 -->
                 </button>
             </div>
 
-            <!-- 搜索栏 -->
+            <!-- =========================================================================
+            * 聊天设置菜单弹窗
+            * 作用：点击设置按钮后显示的功能菜单
+            * 包含：搜索聊天记录、保存聊天记录两个菜单项
+            * ========================================================================= -->
+            <div class="chat-settings-menu" id="chatSettingsMenu" style="display: none; position: absolute; top: 60px; right: 15px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; z-index: 1000; min-width: 160px;">
+                <button class="menu-item" id="menuSearchBtn" style="width: 100%; text-align: left; padding: 10px 15px; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px;">
+                    <i class="fas fa-search" style="margin-right: 10px;"></i>搜索聊天记录
+                </button>
+                <button class="menu-item" id="menuSaveChatBtn" style="width: 100%; text-align: left; padding: 10px 15px; background: none; border: none; color: var(--text-primary); cursor: pointer; border-radius: 6px;">
+                    <i class="fas fa-save" style="margin-right: 10px;"></i>保存聊天记录
+                </button>
+            </div>
+
+            <!-- 搜索栏：搜索聊天记录（原功能） -->
             <div class="search-container" id="searchContainer">
                 <input type="text" class="search-input" id="searchInput" placeholder="搜索聊天记录...">
                 <button class="search-cancel-btn" id="searchCancelBtn">取消</button>
             </div>
             
-            <!-- 搜索结果导航 -->
+            <!-- 搜索结果导航：显示搜索结果数量和上下导航 -->
             <div class="search-results" id="searchResults">
                 <div class="search-count" id="searchCount">找到 0 个结果</div>
                 <div class="search-nav">
@@ -904,20 +1288,19 @@
                 </div>
             </div>
 
-            <!-- 聊天视图容器 -->
+            <!-- 聊天视图容器：消息列表和输入框的容器 -->
             <div class="chat-view-container">
-                <!-- 聊天消息容器 -->
+                <!-- 聊天消息容器：显示所有消息 -->
                 <div class="chat-messages-container" id="chatMessagesContainer">
                     <!-- 对话消息会动态添加在这里 -->
-                </div>
-
-                <!-- 输入区域 - 固定在聊天窗口底部 -->
+                </div>  
+                <!-- 输入区域：固定在聊天窗口底部 -->
                 <div class="chat-input-section">
                     <div class="input-container">
                         <textarea 
                             class="message-input" 
                             id="messageInput"
-                            placeholder="在这里诉说你的心声..." 
+                            placeholder="输入消息..." 
                             rows="1"
                         ></textarea>
                         <button class="lightbulb" id="lightbulb" title="AI帮答">
@@ -928,49 +1311,39 @@
                         </button>
                     </div>
                     
-                    <!-- AI建议区域 -->
+                    <!-- AI建议区域：显示AI生成的回复建议 -->
                     <div class="ai-suggestions" id="aiSuggestions">
                         <!-- AI建议将动态添加在这里 -->
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- 设置视图 -->
+        <!-- =========================================================================
+         * 设置视图
+         * 作用：应用配置和设置页面
+         * 包含：API配置、其他设置、进阶设置
+         * ========================================================================= -->
         <div class="settings-view" id="settingsView">
-            <!-- 状态栏 -->
-            <div class="status-bar">
-                <div class="app-name">设置</div>
-                <div class="time" id="settingsTime">21:30</div>
-            </div>
-
             <div class="settings-container">
-                <!-- API配置 -->
+                <!-- API配置区域：模型提供方、API地址、密钥等 -->
                 <div class="settings-section">
                     <div class="settings-title">
                         <i class="fas fa-cogs"></i>
                         API配置
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">模型提供方</label>
-                        <select class="form-select" id="apiProvider">
-                            <option value="xushuo">叙说AI</option>
-                            <option value="custom" selected>自定义</option>
-                        </select>
+                    <div class="form-group" id="customApiKeyGroup">
+                        <label class="form-label">API密钥</label>
+                        <input type="password" class="form-input" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
                     </div>
                     <div class="form-group" id="customApiGroup">
                         <label class="form-label">API地址</label>
                         <input type="text" class="form-input" id="apiUrl" placeholder="例如：https://api.openai.com/v1/chat/completions">
                     </div>
-                    <div class="form-group" id="customApiKeyGroup">
-                        <label class="form-label">API密钥</label>
-                        <input type="password" class="form-input" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx">
-                    </div>
                     <div class="form-group">
-                        <label class="form-label">模型</label>
+                        <label class="form-label">对话模型</label>
                         <div class="form-input-group" style="display: flex; gap: 10px;">
                             <input type="text" class="form-input" id="apiModel" placeholder="例如：gpt-3.5-turbo" style="flex: 1;">
-                            <button class="btn btn-secondary" id="getModelsBtn" style="width: auto; padding: 10px 15px;">获取模型</button>
+                            <button class="btn btn-secondary" id="getModelsBtn" style="width: auto; padding: 10px 15px;">获取模型列表</button>
                         </div>
                         <select class="form-select" id="modelSelect" style="margin-top: 10px; display: none;">
                             <option value="">选择模型</option>
@@ -979,17 +1352,13 @@
                             提示：部分API提供商不支持获取模型列表，请手动输入模型名称
                         </small>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">温度 (0-2)</label>
-                        <input type="number" class="form-input" id="temperature" placeholder="0.7" value="0.7" step="0.1" min="0" max="2">
-                    </div>
                     <div id="apiStatus" class="api-status" style="display: none;"></div>
                     <div class="form-actions">
                         <button class="btn btn-primary" id="saveApiConfigBtn">保存配置</button>
                     </div>
                 </div>
 
-                <!-- 其他设置 -->
+                <!-- 其他设置区域：上下文长度、自动滚动等 -->
                 <div class="settings-section">
                     <div class="settings-title">
                         <i class="fas fa-sliders-h"></i>
@@ -1000,16 +1369,9 @@
                         <input type="number" class="form-input" id="maxContextLength" placeholder="10" value="10" min="1" max="50">
                         <small style="color: var(--text-muted); font-size: 12px;">保留最近的对话条数作为上下文</small>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">自动滚动到底部</label>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="autoScroll" checked>
-                            <label for="autoScroll" style="color: var(--text-secondary); font-size: 14px;">发送消息后自动滚动到最新消息</label>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- 进阶设置 -->
+                <!-- 进阶设置区域：AI帮答提示词 -->
                 <div class="settings-section">
                     <div class="settings-title">
                         <i class="fas fa-magic"></i>
@@ -1023,7 +1385,11 @@
             </div>
         </div>
 
-        <!-- 底部导航 - 只在对话和设置页面显示 -->
+        <!-- =========================================================================
+         * 底部导航栏
+         * 作用：在对话和设置页面之间切换
+         * 使用场景：联系人列表和设置页面底部
+         * ========================================================================= -->
         <div class="bottom-nav" id="bottomNav">
             <button class="nav-item active" id="navChat">
                 <i class="fas fa-comments nav-icon"></i>
@@ -1036,7 +1402,12 @@
         </div>
     </div>
 
-    <!-- 模态框 - 创建聊天窗口 -->
+    <!-- =========================================================================
+     * 创建聊天窗口模态框
+     * 作用：两步表单创建新的聊天窗口
+     * 步骤1：填写窗口名称
+     * 步骤2：设置角色名称、描述和指令
+     * ========================================================================= -->
     <div class="modal" id="createChatModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1082,7 +1453,11 @@
         </div>
     </div>
 
-    <!-- 模态框 - 确认删除 -->
+    <!-- =========================================================================
+     * 确认删除模态框
+     * 作用：删除联系人前的确认弹窗
+     * 使用场景：滑动删除点击删除按钮后
+     * ========================================================================= -->
     <div class="modal" id="confirmDeleteModal" style="display: none;">
         <div class="confirm-delete-modal">
             <div class="confirm-delete-text">确认删除这个对话窗口吗？</div>
@@ -1093,53 +1468,153 @@
         </div>
     </div>
 
+<!-- =========================================================================
+ * 保存聊天记录模态框
+ * 作用：选择要保存的聊天消息，支持多选和搜索
+ * 包含：搜索栏、消息列表、全选按钮、已选条数显示、保存按钮
+ * ========================================================================= -->
+ <div class="modal" id="saveChatModal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+            <h2 class="modal-title">保存聊天记录</h2>
+            <button class="modal-close" id="closeSaveChatModal">×</button>
+        </div>
+        
+        <!-- =========================================================================
+         * 新增：保存模态框搜索栏
+         * 作用：在保存聊天记录时搜索特定消息
+         * 使用场景：用户需要快速定位特定消息时
+         * ========================================================================= -->
+        <div class="search-container" id="saveSearchContainer" style="display: flex; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+            <input type="text" class="search-input" id="saveSearchInput" placeholder="搜索聊天记录..." style="flex: 1;">
+            <button class="search-cancel-btn" id="saveSearchCancelBtn" style="margin-left: 10px;">取消</button>
+        </div>
+        
+        <!-- =========================================================================
+         * 新增：保存模态框搜索结果导航
+         * 作用：显示搜索结果数量和上下导航
+         * ========================================================================= -->
+        <div class="search-results" id="saveSearchResults" style="display: none; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+            <div class="search-count" id="saveSearchCount">找到 0 个结果</div>
+            <div class="search-nav">
+                <button class="search-nav-btn" id="savePrevResult" disabled>上一个</button>
+                <button class="search-nav-btn" id="saveNextResult" disabled>下一个</button>
+            </div>
+        </div>
+        
+        <!-- 操作栏：全选/取消全选、已选数量 -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+            <button class="btn btn-secondary" id="selectAllMessagesBtn" style="min-width: 200px; height: 36px; padding: 5px 15px; font-size: 13px; flex: none;">全选</button>
+            <span id="selectedMessagesCount" style="color: var(--text-secondary); font-size: 13px;">已选择 0 条</span>
+        </div>
+        
+        <!-- 消息列表容器（完全复用聊天窗口样式） -->
+        <div class="save-messages-list" id="saveMessageList">
+            <!-- 消息将动态添加到这里，样式完全复用聊天窗口 -->
+        </div>
+        
+        <!-- 底部按钮：取消和保存 -->
+        <div class="form-actions" style="margin-top: 0;">
+            <button class="btn btn-secondary" id="cancelSaveChatBtn">取消</button>
+            <button class="btn btn-primary" id="confirmSaveChatBtn">保存为图片</button>
+        </div>      
+    </div>
+</div>
+
     <script>
-        // 应用状态
+        // =========================================================================
+        // 全局数据状态管理
+        // 作用：统一管理应用的所有数据，包括联系人、聊天记录、API配置等
+        // 使用场景：整个应用中所有需要共享的数据都存储在这里
+        // 说明：这是应用的核心数据仓库，任何需要跨函数共享的数据都放在这里
+        // =========================================================================
         const state = {
-            contacts: [],
-            currentContact: null,
-            messages: {},
-            apiConfig: {
-                provider: 'custom',
-                url: '',
-                key: '',
-                model: 'gpt-3.5-turbo',
-                temperature: 0.7,
-                availableModels: []
+            contacts: [],                    // 联系人列表数组，每个对象包含id、name、roleInstruction等
+            currentContact: null,             // 当前选中的联系人对象
+            messages: {},                     // 聊天记录对象，键为联系人ID，值为消息数组
+            apiConfig: {                       // API配置对象
+                provider: 'custom',             // 模型提供方：custom或xushuo
+                url: '',                        // API地址
+                key: '',                        // API密钥
+                model: '',                      // 模型名称
+                //temperature: 0.7,               // 温度参数
+                availableModels: []              // 可用模型列表
             },
-            appSettings: {
-                maxContextLength: 10,
-                autoScroll: true,
-                aiHelpPrompt: '请基于用户的当前对话内容，生成3-5个简短、自然、符合对话语境的回复建议。每个建议应该是一个完整的句子，能够帮助用户更好地表达自己的想法或继续对话。'
+            appSettings: {                       // 应用设置对象
+                maxContextLength: 10,             // 最大上下文长度
+                aiHelpPrompt: '请基于用户的当前对话内容，生成2个简短、自然、符合对话语境的回复建议。每个建议应该是一个完整的句子，能够帮助用户更好地表达自己的想法或继续对话。'
             },
-            isSearchActive: false,
-            searchResults: [],
-            currentSearchIndex: -1,
-            currentStep: 1,
-            contactToDelete: null
+            isSearchActive: false,              // 搜索是否激活
+            searchResults: [],                    // 搜索结果数组
+            // 保存聊天相关状态
+            selectedMessages: new Set(),        // 选中的消息ID集合
+            isAllSelected: false,               // 是否全选
+        // =========================================================================
+        // 新增：保存模态框搜索状态
+        // 作用：管理保存模态框中的搜索结果
+        // =========================================================================
+        saveSearchActive: false,            // 保存模态框搜索是否激活
+        saveSearchResults: [],              // 保存模态框搜索结果数组
+        saveCurrentSearchIndex: -1,         // 保存模态框当前搜索结果索引
+        originalMessages: [],               // 保存原始消息列表（用于恢复）
+    
+            currentSearchIndex: -1,                // 当前搜索结果索引
+            currentStep: 1,                        // 创建聊天的当前步骤
+            contactToDelete: null                  // 待删除的联系人
         };
 
-        // DOM元素
+        // =========================================================================
+        // DOM元素引用
+        // 作用：缓存所有需要操作的DOM元素，避免重复查询
+        // 使用场景：任何需要操作DOM的地方都通过这个对象访问
+        // 说明：将所有需要操作的DOM元素集中管理，提高代码可维护性
+        // =========================================================================
         const elements = {
+            // 时间显示
             currentTime: document.getElementById('currentTime'),
-            settingsTime: document.getElementById('settingsTime'),
+            
+            // 页面容器
             contactsView: document.getElementById('contactsView'),
             chatView: document.getElementById('chatView'),
             settingsView: document.getElementById('settingsView'),
+            
+            // 联系人列表
             addContactBtn: document.getElementById('addContactBtn'),
             contactList: document.getElementById('contactList'),
+            
+            // 聊天头部
             chatHeader: document.getElementById('chatHeader'),
             chatTitle: document.getElementById('chatTitle'),
             backBtn: document.getElementById('backBtn'),
             chatSettingsBtn: document.getElementById('chatSettingsBtn'),
+            
+            // 聊天设置菜单
+            chatSettingsMenu: document.getElementById('chatSettingsMenu'),
+            menuSearchBtn: document.getElementById('menuSearchBtn'),
+            menuSaveChatBtn: document.getElementById('menuSaveChatBtn'),
+            
+            // 保存聊天模态框
+            saveChatModal: document.getElementById('saveChatModal'),
+            closeSaveChatModal: document.getElementById('closeSaveChatModal'),
+            saveMessageList: document.getElementById('saveMessageList'),
+            selectAllMessagesBtn: document.getElementById('selectAllMessagesBtn'),
+            selectedMessagesCount: document.getElementById('selectedMessagesCount'),
+            cancelSaveChatBtn: document.getElementById('cancelSaveChatBtn'),
+            confirmSaveChatBtn: document.getElementById('confirmSaveChatBtn'),
+
+            // 聊天区域
             chatMessagesContainer: document.getElementById('chatMessagesContainer'),
             messageInput: document.getElementById('messageInput'),
             sendButton: document.getElementById('sendButton'),
             lightbulb: document.getElementById('lightbulb'),
             aiSuggestions: document.getElementById('aiSuggestions'),
+            
+            // 导航
             navChat: document.getElementById('navChat'),
             navSettings: document.getElementById('navSettings'),
             bottomNav: document.getElementById('bottomNav'),
+            
+            // 搜索
             searchContainer: document.getElementById('searchContainer'),
             searchInput: document.getElementById('searchInput'),
             searchCancelBtn: document.getElementById('searchCancelBtn'),
@@ -1147,6 +1622,8 @@
             searchCount: document.getElementById('searchCount'),
             prevResult: document.getElementById('prevResult'),
             nextResult: document.getElementById('nextResult'),
+            
+            // 创建聊天模态框
             createChatModal: document.getElementById('createChatModal'),
             closeCreateChatModal: document.getElementById('closeCreateChatModal'),
             windowName: document.getElementById('windowName'),
@@ -1161,11 +1638,13 @@
             step2: document.getElementById('step2'),
             stepContainer1: document.getElementById('stepContainer1'),
             stepContainer2: document.getElementById('stepContainer2'),
+            
+            // 删除确认
             confirmDeleteModal: document.getElementById('confirmDeleteModal'),
             cancelDeleteBtn: document.getElementById('cancelDeleteBtn'),
             confirmDeleteBtn: document.getElementById('confirmDeleteBtn'),
-            // 设置页面元素
-            apiProvider: document.getElementById('apiProvider'),
+            
+            // 设置页面
             customApiGroup: document.getElementById('customApiGroup'),
             customApiKeyGroup: document.getElementById('customApiKeyGroup'),
             apiUrl: document.getElementById('apiUrl'),
@@ -1173,15 +1652,21 @@
             apiModel: document.getElementById('apiModel'),
             getModelsBtn: document.getElementById('getModelsBtn'),
             modelSelect: document.getElementById('modelSelect'),
-            temperature: document.getElementById('temperature'),
+            //temperature: document.getElementById('temperature'),
             apiStatus: document.getElementById('apiStatus'),
             saveApiConfigBtn: document.getElementById('saveApiConfigBtn'),
             maxContextLength: document.getElementById('maxContextLength'),
-            autoScroll: document.getElementById('autoScroll'),
             aiHelpPrompt: document.getElementById('aiHelpPrompt')
         };
 
-        // 从LocalStorage加载数据
+        // =========================================================================
+        // 数据持久化 - 加载与保存
+        // 作用：从localStorage读取数据，保存数据到localStorage
+        // 使用场景：应用启动时加载，数据变化时保存
+        // 说明：实现数据的本地存储，保证刷新页面后数据不丢失
+        // =========================================================================
+
+        /** 从LocalStorage加载所有保存的数据 */
         function loadFromLocalStorage() {
             try {
                 const savedContacts = localStorage.getItem('echoGarden_contacts');
@@ -1200,21 +1685,17 @@
                 if (savedApiConfig) {
                     const apiConfig = JSON.parse(savedApiConfig);
                     state.apiConfig = { ...state.apiConfig, ...apiConfig };
-                    elements.apiProvider.value = apiConfig.provider || 'custom';
+                    // 更新表单显示
                     elements.apiUrl.value = apiConfig.url || '';
                     elements.apiKey.value = apiConfig.key || '';
-                    elements.apiModel.value = apiConfig.model || 'gpt-3.5-turbo';
-                    elements.temperature.value = apiConfig.temperature || 0.7;
-                    
-                    // 更新API提供方显示
-                    updateApiProviderDisplay();
+                    elements.apiModel.value = apiConfig.model || '';
+                    //elements.temperature.value = apiConfig.temperature || 0.7;
                 }
                 
                 if (savedAppSettings) {
                     const appSettings = JSON.parse(savedAppSettings);
                     state.appSettings = { ...state.appSettings, ...appSettings };
                     elements.maxContextLength.value = appSettings.maxContextLength || 10;
-                    elements.autoScroll.checked = appSettings.autoScroll !== false;
                     elements.aiHelpPrompt.value = appSettings.aiHelpPrompt || state.appSettings.aiHelpPrompt;
                 }
                 
@@ -1239,7 +1720,7 @@
             }
         }
 
-        // 保存数据到LocalStorage
+        /** 保存所有数据到LocalStorage */
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('echoGarden_contacts', JSON.stringify(state.contacts));
@@ -1251,16 +1732,29 @@
             }
         }
 
-        // 更新时间显示
-        function updateTime() {
+        /** 获取当前时间字符串 (HH:MM格式) */
+        function getCurrentTime() {
             const now = new Date();
-            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
-                             now.getMinutes().toString().padStart(2, '0');
-            elements.currentTime.textContent = timeString;
-            elements.settingsTime.textContent = timeString;
+            return now.getHours().toString().padStart(2, '0') + ':' + 
+                   now.getMinutes().toString().padStart(2, '0');
         }
 
-        // 渲染联系人列表
+        /** 更新时间显示 */
+        function updateTime() {
+            const timeString = getCurrentTime();
+            if (elements.currentTime) {
+                elements.currentTime.textContent = timeString;
+            }
+        }
+
+        // =========================================================================
+        // 联系人列表管理
+        // 作用：渲染和管理联系人列表，包括滑动删除功能
+        // 使用场景：联系人列表页面
+        // 说明：处理联系人的显示、点击、滑动删除等交互
+        // =========================================================================
+
+        /** 渲染整个联系人列表 */
         function renderContacts() {
             elements.contactList.innerHTML = '';
             
@@ -1351,12 +1845,12 @@
             });
         }
 
-        // 显示确认删除模态框
+        /** 显示确认删除模态框 */
         function showConfirmDeleteModal() {
             elements.confirmDeleteModal.style.display = 'flex';
         }
 
-        // 隐藏确认删除模态框
+        /** 隐藏确认删除模态框 */
         function hideConfirmDeleteModal() {
             elements.confirmDeleteModal.style.display = 'none';
             state.contactToDelete = null;
@@ -1367,7 +1861,7 @@
             });
         }
 
-        // 删除联系人
+        /** 删除联系人 */
         function deleteContact() {
             if (!state.contactToDelete) return;
             
@@ -1393,7 +1887,14 @@
             hideConfirmDeleteModal();
         }
 
-        // 渲染聊天消息
+        // =========================================================================
+        // 聊天消息管理
+        // 作用：处理聊天消息的渲染、添加、滚动等
+        // 使用场景：聊天页面
+        // 说明：负责消息的显示、消息菜单、右键功能等
+        // =========================================================================
+
+        /** 渲染指定联系人的所有聊天消息 */
         function renderMessages(contactId) {
             const messages = state.messages[contactId] || [];
             elements.chatMessagesContainer.innerHTML = '';
@@ -1401,51 +1902,59 @@
             if (messages.length === 0) {
                 const welcomeDiv = document.createElement('div');
                 welcomeDiv.className = 'welcome-message';
-                welcomeDiv.textContent = '开始新的对话...';
+                welcomeDiv.textContent = '对话内容由AI生成';
                 elements.chatMessagesContainer.appendChild(welcomeDiv);
             } else {
                 messages.forEach(msg => {
+                    // 渲染历史消息时，传入 false 表示不需要自动滚动（因为还没渲染完）
                     addMessageToDOM(msg, false);
                 });
             }
             
-            // 确保滚动到底部显示最新消息
-            if (state.appSettings.autoScroll) {
-                scrollToBottom();
-            }
+            // 所有历史消息渲染完成后，滚动到底部
+            scrollToBottom();
+            
         }
 
-        // 添加消息到DOM
+        /** 添加单条消息到DOM */
         function addMessageToDOM(message, shouldScroll = true) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.isUser ? 'user' : 'ai'}`;
             messageDiv.dataset.id = message.id;
             messageDiv.dataset.isUser = message.isUser;
-            messageDiv.innerHTML = `
-                <div class="message-content">${message.content}</div>
-            `;
-            
-            // 添加长按事件
+
+            // =========================================================================
+            // 构建消息HTML
+            // 作用：根据消息类型显示不同位置的时间
+            // AI消息：时间显示在左下角
+            // 用户消息：时间显示在右下角
+            // =========================================================================
+            let messageHTML = `<div class="message-content">${message.content}</div>`;
+            messageHTML += `<div class="message-time">${message.time}</div>`;
+
+            messageDiv.innerHTML = messageHTML;  // 使用构建好的 HTML
+
+            // 添加长按事件（右键菜单）
             messageDiv.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 showMessageMenu(e, message);
             });
             
             elements.chatMessagesContainer.appendChild(messageDiv);
+
+            // 因为新消息应该总是显示出来
+            scrollToBottom();
             
-            if (shouldScroll && state.appSettings.autoScroll) {
-                scrollToBottom();
-            }
         }
 
-        // 滚动到聊天底部
+        /** 滚动到聊天底部 */
         function scrollToBottom() {
             setTimeout(() => {
                 elements.chatMessagesContainer.scrollTop = elements.chatMessagesContainer.scrollHeight;
             }, 100);
         }
 
-        // 打开聊天
+        /** 打开聊天窗口 */
         function openChat(contact) {
             state.currentContact = contact;
             
@@ -1473,7 +1982,7 @@
             elements.navChat.classList.add('active');
         }
 
-        // 显示消息菜单
+        /** 显示消息右键菜单 */
         function showMessageMenu(e, message) {
             // 移除现有的菜单
             const existingMenu = document.querySelector('.message-menu');
@@ -1534,385 +2043,275 @@
             }, 10);
         }
 
-        // 发送消息到API - 修复版本
-async function sendMessageToAPI(userMessage, contact) {
-    // 检查API配置
-    if (state.apiConfig.provider === 'custom') {
-        if (!state.apiConfig.url || !state.apiConfig.key) {
-            showAPIStatus('请先配置API设置', 'error');
-            return null;
-        }
-    }
+        // =========================================================================
+        // 发送消息与API调用
+        // 作用：处理消息发送、API调用和错误处理
+        // 使用场景：用户点击发送按钮或按回车
+        // 说明：包含详细的错误处理，将错误信息显示给用户
+        // =========================================================================
 
-    // 构建消息历史
-    const messages = [
-        {
-            role: 'system',
-            content: contact.roleInstruction || '你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。'
-        }
-    ];
-
-    // 添加上下文消息
-    const history = state.messages[contact.id] || [];
-    const maxContext = parseInt(state.appSettings.maxContextLength) || 10;
-    const recentHistory = history.slice(-maxContext);
-    
-    // 关键修复：排除可能已经存在的当前用户消息
-    // 检查历史中最后一条消息是否与当前消息相同
-    let filteredHistory = recentHistory;
-    if (recentHistory.length > 0) {
-        const lastMsg = recentHistory[recentHistory.length - 1];
-        // 如果最后一条是用户消息，并且内容与当前消息相似，就排除它
-        if (lastMsg.isUser && lastMsg.content === userMessage) {
-            filteredHistory = recentHistory.slice(0, -1); // 排除最后一条
-        }
-    }
-    
-    filteredHistory.forEach(msg => {
-        messages.push({
-            role: msg.isUser ? 'user' : 'assistant',
-            content: msg.content
-        });
-    });
-
-    // 添加当前用户消息
-    messages.push({
-        role: 'user',
-        content: userMessage
-    });
-
-    // 调试日志：查看实际发送的消息
-    console.log('发送API请求消息数组:', messages.map((m, i) => 
-        `${i}. ${m.role}: ${m.content.substring(0, 50)}${m.content.length > 50 ? '...' : ''}`
-    ));
-
-    try {
-        console.log('发送API请求:', {
-            url: state.apiConfig.url,
-            model: state.apiConfig.model,
-            temperature: state.apiConfig.temperature,
-            messagesCount: messages.length
-        });
-
-        let response;
-        
-        if (state.apiConfig.provider === 'custom') {
-            // 自定义API - 兼容不同API提供商的格式
-            const requestBody = {
-                model: state.apiConfig.model,
-                messages: messages,
-                temperature: parseFloat(state.apiConfig.temperature) || 0.7,
-                max_tokens: 2048,
-                stream: false
+        /** 发送消息（主函数） */
+        async function sendMessage() {
+            const content = elements.messageInput.value.trim();
+            if (!content || !state.currentContact) return;
+            
+            // 创建用户消息对象
+            const userMessage = {
+                id: Date.now(),
+                content: content,
+                isUser: true,
+                time: new Date().toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false  // 使用24小时制
+                })
             };
-
-            console.log('请求体:', JSON.stringify(requestBody, null, 2));
-
-            // 添加超时设置
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
-
-            response = await fetch(state.apiConfig.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${state.apiConfig.key}`
-                },
-                body: JSON.stringify(requestBody),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            console.log('响应状态:', response.status);
-            console.log('响应状态文本:', response.statusText);
-
-            // 先获取原始响应文本
-            const responseText = await response.text();
-            console.log('原始响应文本:', responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''));
-
-            if (!response.ok) {
-                // 尝试解析错误信息
-                let errorMessage = `API请求失败: ${response.status} ${response.statusText}`;
-                try {
-                    const errorData = JSON.parse(responseText);
-                    errorMessage += ` - ${JSON.stringify(errorData)}`;
-                } catch (e) {
-                    // 如果不是JSON，使用原始文本
-                    errorMessage += ` - ${responseText.substring(0, 200)}`;
-                }
-                throw new Error(errorMessage);
-            }
-
-            // 尝试解析JSON
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (e) {
-                console.error('JSON解析失败，原始响应:', responseText);
-                
-                // 检查是否返回了HTML页面
-                if (responseText.includes('<!DOCTYPE') || 
-                    responseText.includes('<html') || 
-                    responseText.includes('HTTP') ||
-                    responseText.includes('nginx') ||
-                    responseText.includes('Apache')) {
-                    throw new Error('API返回了HTML页面，请检查API地址是否正确');
-                }
-                
-                // 如果不是JSON，尝试从纯文本中提取信息
-                if (responseText.trim().length > 0) {
-                    // 返回原始文本作为回复
-                    return responseText.trim();
-                }
-                
-                throw new Error('API返回了无效的JSON格式');
+            
+            // 添加到DOM
+            addMessageToDOM(userMessage);
+            
+            // 保存到状态
+            const contactId = state.currentContact.id;
+            if (!state.messages[contactId]) {
+                state.messages[contactId] = [];
             }
             
-            console.log('解析后的数据:', data);
-
-            // 兼容不同API响应格式
-            if (data.choices && data.choices[0] && data.choices[0].message) {
-                return data.choices[0].message.content;
-            } else if (data.choices && data.choices[0] && data.choices[0].text) {
-                return data.choices[0].text;
-            } else if (data.response) {
-                return data.response;
-            } else if (data.content) {
-                return data.content;
-            } else if (data.message) {
-                return data.message;
-            } else if (data.result) {
-                return data.result;
-            } else if (data.text) {
-                return data.text;
-            } else if (data.answer) {
-                return data.answer;
-            } else if (data.reply) {
-                return data.reply;
-            } else if (data.assistant) {
-                return data.assistant;
+            // 更新联系人预览
+            state.currentContact.preview = content.length > 20 ? content.substring(0, 20) + '...' : content;
+            state.currentContact.lastTime = userMessage.time;
+            
+            // 清空输入框
+            elements.messageInput.value = '';
+            autoResizeTextarea();
+            
+            // 显示加载状态
+            const loadingMessage = {
+                id: Date.now() + 1,
+                content: '正在思考...',
+                isUser: false,
+                time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            addMessageToDOM(loadingMessage);
+            
+            // 调用API
+            const aiResponse = await sendMessageToAPI(content, state.currentContact);
+            
+            // 移除加载消息
+            elements.chatMessagesContainer.removeChild(elements.chatMessagesContainer.lastChild);
+            
+            if (aiResponse) {
+                // 保存用户消息到历史
+                state.messages[contactId].push(userMessage);
+                
+                // 创建AI消息对象
+                const aiMessage = {
+                    id: Date.now() + 2,
+                    content: aiResponse,
+                    isUser: false,
+                    time: new Date().toLocaleTimeString('zh-CN', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: false
+                    })
+                };
+                
+                // 添加到DOM
+                addMessageToDOM(aiMessage);
+                
+                // 保存到状态
+                state.messages[contactId].push(aiMessage);
+                
+                // 更新联系人预览
+                state.currentContact.preview = aiResponse.length > 20 ? aiResponse.substring(0, 20) + '...' : aiResponse;
+                state.currentContact.lastTime = aiMessage.time;
             } else {
-                console.error('未知的响应格式:', data);
-                // 尝试从data对象中查找任何字符串值
-                for (const key in data) {
-                    if (typeof data[key] === 'string' && data[key].length > 0) {
-                        return data[key];
-                    }
+                // API调用失败，将用户消息保存到历史中
+                state.messages[contactId].push(userMessage);
+                
+                // 获取API状态中显示的错误信息
+                let errorContent = '抱歉，我暂时无法回复。请检查API配置或网络连接。';
+                
+                // 检查是否有错误状态显示
+                if (elements.apiStatus && elements.apiStatus.style.display === 'block' && elements.apiStatus.textContent) {
+                    errorContent = elements.apiStatus.textContent;
                 }
-                return '收到。';
+                
+                // 显示错误消息
+                const errorMessage = {
+                    id: Date.now() + 2,
+                    content: errorContent,
+                    isUser: false,
+                    time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+                };
+                
+                addMessageToDOM(errorMessage);
+                state.messages[contactId].push(errorMessage);
             }
-        } else {
-            // 叙说AI
-            showAPIStatus('叙说AI服务暂不可用，请使用自定义API', 'error');
-            return null;
+            
+            // 更新联系人列表和保存
+            renderContacts();
+            saveToLocalStorage();
         }
 
-    } catch (error) {
-        console.error('API调用详细错误:', error);
+        /** 发送消息到API（包含详细的错误处理） */
+        async function sendMessageToAPI(userMessage, contact) {
+            // 检查API配置
+            if (!state.apiConfig.url || !state.apiConfig.key) {
+                showAPIStatus('请先配置API设置', 'error');
+                return null;
+            }
+
+            // 构建消息历史
+            const messages = [
+            {
+                role: 'system',
+                content: contact.roleInstruction || '你是一位耐心的倾听者，善于引导他人表达内心感受，提供温暖的陪伴和支持。'
+            }
+        ];
+
+        // 添加上下文消息
+        const history = state.messages[contact.id] || [];
+        const maxContext = parseInt(state.appSettings.maxContextLength) || 10;
+        const recentHistory = history.slice(-maxContext);
         
-        // 提供更具体的错误信息
-        if (error.name === 'AbortError') {
-            showAPIStatus('请求超时，请检查网络连接或API地址', 'error');
-        } else if (error.message.includes('CORS')) {
-            showAPIStatus('跨域请求被阻止，请确保API支持CORS', 'error');
-        } else if (error.message.includes('HTML页面')) {
-            showAPIStatus('API返回了HTML页面，请检查API地址是否正确', 'error');
-        } else if (error.message.includes('Failed to fetch')) {
-            showAPIStatus('网络连接失败，请检查API地址或网络连接', 'error');
-        } else {
-            showAPIStatus(`API调用失败: ${error.message}`, 'error');
+        // 排除可能已经存在的当前用户消息
+        let filteredHistory = recentHistory;
+        if (recentHistory.length > 0) {
+            const lastMsg = recentHistory[recentHistory.length - 1];
+            if (lastMsg.isUser && lastMsg.content === userMessage) {
+                filteredHistory = recentHistory.slice(0, -1);
+            }
         }
         
-        return null;
-    }
-}
-
-        // 在设置页面添加调试工具
-        function addDebugTools() {
-            // 在API配置部分添加测试按钮
-            const testApiBtn = document.createElement('button');
-            testApiBtn.className = 'btn btn-secondary';
-            testApiBtn.id = 'testApiConnectionBtn';
-            testApiBtn.innerHTML = '<i class="fas fa-vial"></i> 测试连接';
-            testApiBtn.style.marginTop = '10px';
-            testApiBtn.style.width = '100%';
-            
-            // 插入到保存按钮之前
-            const apiSection = document.querySelector('.settings-section');
-            const saveBtn = document.getElementById('saveApiConfigBtn');
-            apiSection.insertBefore(testApiBtn, saveBtn);
-            
-            // 测试连接功能
-            testApiBtn.addEventListener('click', async function() {
-                if (!elements.apiUrl.value.trim() || !elements.apiKey.value.trim()) {
-                    showAPIStatus('请填写API地址和密钥', 'error');
-                    return;
-                }
-                
-                showAPIStatus('正在测试连接...', 'success');
-                
-                try {
-                    // 发送一个简单的测试请求
-                    const testMessages = [
-                        {
-                            role: 'user',
-                            content: '你好'
-                        }
-                    ];
-                    
-                    const requestBody = {
-                        model: elements.apiModel.value.trim() || 'gpt-3.5-turbo',
-                        messages: testMessages,
-                        temperature: 0.7,
-                        max_tokens: 50,
-                        stream: false
-                    };
-                    
-                    console.log('测试请求:', requestBody);
-                    
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
-                    
-                    const response = await fetch(elements.apiUrl.value.trim(), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${elements.apiKey.value.trim()}`
-                        },
-                        body: JSON.stringify(requestBody),
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
-                    
-                    const responseText = await response.text();
-                    console.log('测试响应:', responseText.substring(0, 500));
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 200)}`);
-                    }
-                    
-                    // 尝试解析JSON
-                    try {
-                        const data = JSON.parse(responseText);
-                        showAPIStatus('连接测试成功！', 'success');
-                        console.log('测试成功，响应数据:', data);
-                    } catch (e) {
-                        if (responseText.trim().length > 0) {
-                            showAPIStatus('连接成功，但返回的不是标准JSON格式', 'success');
-                        } else {
-                            throw new Error('API返回了空响应');
-                        }
-                    }
-                    
-                } catch (error) {
-                    console.error('测试连接失败:', error);
-                    showAPIStatus(`测试失败: ${error.message}`, 'error');
-                }
+        filteredHistory.forEach(msg => {
+            messages.push({
+                role: msg.isUser ? 'user' : 'assistant',
+                content: msg.content
             });
-        }
-        // 在初始化函数中调用
-        function init() {
-            // ... 其他初始化代码 ...
-            
-            // 添加调试工具
-            addDebugTools();
-            
-            // ... 其他初始化代码 ...
-        }
-        // 发送消息
-async function sendMessage() {
-    const content = elements.messageInput.value.trim();
-    if (!content || !state.currentContact) return;
-    
-    // 创建用户消息对象
-    const userMessage = {
-        id: Date.now(),
-        content: content,
-        isUser: true,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    // 添加到DOM
-    addMessageToDOM(userMessage);
-    
-    // 保存到状态
-    const contactId = state.currentContact.id;
-    if (!state.messages[contactId]) {
-        state.messages[contactId] = [];
-    }
-    
-    // 关键修复：先保存到临时变量，不立即push到历史中
-    const tempUserMessage = { ...userMessage };
-    
-    // 更新联系人预览
-    state.currentContact.preview = content.length > 20 ? content.substring(0, 20) + '...' : content;
-    state.currentContact.lastTime = userMessage.time;
-    
-    // 清空输入框
-    elements.messageInput.value = '';
-    autoResizeTextarea();
-    
-    // 显示加载状态
-    const loadingMessage = {
-        id: Date.now() + 1,
-        content: '正在思考...',
-        isUser: false,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    addMessageToDOM(loadingMessage);
-    
-    // 调用API - 传入临时消息，不包含在当前历史中
-    const aiResponse = await sendMessageToAPI(content, state.currentContact);
-    
-    // 移除加载消息
-    elements.chatMessagesContainer.removeChild(elements.chatMessagesContainer.lastChild);
-    
-    if (aiResponse) {
-        // 现在才将用户消息保存到历史中
-        state.messages[contactId].push(userMessage);
-        
-        // 创建AI消息对象
-        const aiMessage = {
-            id: Date.now() + 2,
-            content: aiResponse,
-            isUser: false,
-            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-        };
-        
-        // 添加到DOM
-        addMessageToDOM(aiMessage);
-        
-        // 保存到状态
-        state.messages[contactId].push(aiMessage);
-        
-        // 更新联系人预览
-        state.currentContact.preview = aiResponse.length > 20 ? aiResponse.substring(0, 20) + '...' : aiResponse;
-        state.currentContact.lastTime = aiMessage.time;
-    } else {
-        // API调用失败，将用户消息保存到历史中
-        state.messages[contactId].push(userMessage);
-        
-        // 显示错误消息
-        const errorMessage = {
-            id: Date.now() + 2,
-            content: '抱歉，我暂时无法回复。请检查API配置或网络连接。',
-            isUser: false,
-            time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
-        };
-        
-        addMessageToDOM(errorMessage);
-        state.messages[contactId].push(errorMessage);
-    }
-    
-    // 更新联系人列表和保存
-    renderContacts();
-    saveToLocalStorage();
-}
+        });
 
-        // AI帮答功能
+        // 添加当前用户消息
+        messages.push({
+            role: 'user',
+            content: userMessage
+        });
+
+        try {
+            let response;
+                const requestBody = {
+                    model: state.apiConfig.model,
+                    messages: messages,
+                    //temperature: parseFloat(state.apiConfig.temperature) || 0.7,
+                    max_tokens: 2048,
+                    stream: false
+                };
+
+                // 添加超时设置
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                response = await fetch(state.apiConfig.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.apiConfig.key}`
+                    },
+                    body: JSON.stringify(requestBody),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    let errorMessage = `API请求失败: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        errorMessage += ` - ${JSON.stringify(errorData)}`;
+                    } catch (e) {
+                        errorMessage += ` - ${responseText.substring(0, 200)}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    if (responseText.includes('<!DOCTYPE') || 
+                        responseText.includes('<html') || 
+                        responseText.includes('HTTP') ||
+                        responseText.includes('nginx') ||
+                        responseText.includes('Apache')) {
+                        throw new Error('API返回了HTML页面，请检查API地址是否正确');
+                    }
+                    
+                    if (responseText.trim().length > 0) {
+                        return responseText.trim();
+                    }
+                    
+                    throw new Error('API返回了无效的JSON格式');
+                }
+
+                // 兼容不同API响应格式
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    return data.choices[0].message.content;
+                } else if (data.choices && data.choices[0] && data.choices[0].text) {
+                    return data.choices[0].text;
+                } else if (data.response) {
+                    return data.response;
+                } else if (data.content) {
+                    return data.content;
+                } else if (data.message) {
+                    return data.message;
+                } else if (data.result) {
+                    return data.result;
+                } else if (data.text) {
+                    return data.text;
+                } else if (data.answer) {
+                    return data.answer;
+                } else if (data.reply) {
+                    return data.reply;
+                } else if (data.assistant) {
+                    return data.assistant;
+                } else {
+                    for (const key in data) {
+                        if (typeof data[key] === 'string' && data[key].length > 0) {
+                            return data[key];
+                        }
+                    }
+                    return '收到。';
+                }
+            } catch (error) {
+                console.error('API调用详细错误:', error);
+                
+                // 提供更具体的错误信息
+                if (error.name === 'AbortError') {
+                    showAPIStatus('请求超时，请检查网络连接或API地址', 'error');
+                } else if (error.message.includes('CORS')) {
+                    showAPIStatus('跨域请求被阻止，请确保API支持CORS', 'error');
+                } else if (error.message.includes('HTML页面')) {
+                    showAPIStatus('API返回了HTML页面，请检查API地址是否正确', 'error');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showAPIStatus('网络连接失败，请检查API地址或网络连接', 'error');
+                } else {
+                    showAPIStatus(`API调用失败: ${error.message}`, 'error');
+                }
+                
+                return null;
+            }
+        }
+
+        // =========================================================================
+        // 要改：AI帮答功能
+        // 作用：根据当前输入生成回复建议
+        // 使用场景：点击灯泡图标
+        // 说明：调用API生成2个简短的回复建议，用户点击后可快速填入输入框
+        // =========================================================================
+
+        /** 获取AI帮答建议 */
         async function getAIHelpSuggestions() {
             if (!state.currentContact) return;
             
@@ -1920,12 +2319,11 @@ async function sendMessage() {
             if (!currentInput) return;
             
             // 检查API配置
-            if (state.apiConfig.provider === 'custom') {
-                if (!state.apiConfig.url || !state.apiConfig.key) {
-                    showAPIStatus('请先配置API设置', 'error');
-                    return;
-                }
+            if (!state.apiConfig.url || !state.apiConfig.key) {
+                showAPIStatus('请先配置API设置', 'error');
+                return;
             }
+            
             
             // 构建提示词
             const helpPrompt = state.appSettings.aiHelpPrompt;
@@ -1959,25 +2357,19 @@ async function sendMessage() {
             });
             
             try {
-                let response;
-                
-                if (state.apiConfig.provider === 'custom') {
-                    response = await fetch(state.apiConfig.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${state.apiConfig.key}`
-                        },
-                        body: JSON.stringify({
-                            model: state.apiConfig.model,
-                            messages: messages,
-                            temperature: 0.8,
-                            max_tokens: 200
-                        })
-                    });
-                } else {
-                    return;
-                }
+                const response = await fetch(state.apiConfig.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.apiConfig.key}`
+                    },
+                    body: JSON.stringify({
+                        model: state.apiConfig.model,
+                        messages: messages,
+                        //temperature: 0.7,
+                        max_tokens: 200
+                    })
+                });
                 
                 if (!response.ok) {
                     throw new Error(`API请求失败: ${response.status}`);
@@ -2001,7 +2393,7 @@ async function sendMessage() {
             }
         }
 
-        // 显示AI建议
+        /** 显示AI建议 */
         function showAISuggestions(suggestions) {
             elements.aiSuggestions.innerHTML = '';
             
@@ -2021,7 +2413,14 @@ async function sendMessage() {
             elements.aiSuggestions.classList.add('active');
         }
 
-        // 显示API状态
+        // =========================================================================
+        // API配置管理
+        // 作用：管理API配置、获取模型列表
+        // 使用场景：设置页面
+        // 说明：处理API配置的保存、测试、模型获取等功能
+        // =========================================================================
+
+        /** 显示API状态提示 */
         function showAPIStatus(message, type = 'success') {
             elements.apiStatus.textContent = message;
             elements.apiStatus.className = `api-status ${type}`;
@@ -2032,9 +2431,13 @@ async function sendMessage() {
             }, 3000);
         }
 
-        // 获取可用模型 - 修复版本
-        async function getAvailableModels() {
-            if (!state.apiConfig.url || !state.apiConfig.key) {
+         // 获取可用模型
+         async function getAvailableModels() {
+            // 直接读取输入框的值
+            const apiUrl = elements.apiUrl.value.trim();
+            const apiKey = elements.apiKey.value.trim();
+
+            if (!apiUrl || !apiKey) {
                 showAPIStatus('请先填写API地址和密钥', 'error');
                 return;
             }
@@ -2042,21 +2445,15 @@ async function sendMessage() {
             try {
                 showAPIStatus('正在获取模型列表...', 'success');
                 
-                // 尝试不同的API端点
-                let modelsUrl = state.apiConfig.url;
+                // 构建模型列表URL
+                let modelsUrl = apiUrl;
                 
-                // 如果是OpenAI格式的API，尝试获取模型列表
-                if (modelsUrl.includes('openai.com') || modelsUrl.includes('/v1/chat/completions')) {
-                    modelsUrl = modelsUrl.replace('/chat/completions', '/models');
-                } else if (modelsUrl.includes('/chat/completions')) {
-                    // 其他提供商的模型列表端点
+                // 如果URL包含/chat/completions，替换为/models
+                if (modelsUrl.includes('/chat/completions')) {
                     modelsUrl = modelsUrl.replace('/chat/completions', '/models');
                 } else {
-                    // 如果不是标准端点，尝试直接使用/v1/models
-                    const baseUrl = modelsUrl.split('/chat/completions')[0];
-                    if (baseUrl) {
-                        modelsUrl = baseUrl + '/models';
-                    }
+                    // 否则直接在末尾加上/models
+                    modelsUrl = modelsUrl.replace(/\/+$/, '') + '/models';
                 }
                 
                 console.log('尝试获取模型的URL:', modelsUrl);
@@ -2064,7 +2461,7 @@ async function sendMessage() {
                 const response = await fetch(modelsUrl, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${state.apiConfig.key}`,
+                        'Authorization': `Bearer ${apiKey}`,// 使用输入框的值
                         'Content-Type': 'application/json'
                     }
                 });
@@ -2103,21 +2500,17 @@ async function sendMessage() {
             }
         }
 
-        // 更新API提供方显示
-        function updateApiProviderDisplay() {
-            const isCustom = elements.apiProvider.value === 'custom';
-            elements.customApiGroup.style.display = isCustom ? 'block' : 'none';
-            elements.customApiKeyGroup.style.display = isCustom ? 'block' : 'none';
-        }
-
-        // 保存API配置
+        /** 保存API配置 */
         function saveAPIConfig() {
+
+            // 获取用户输入的API地址
+            let apiUrl = elements.apiUrl.value.trim();
+
             state.apiConfig = {
-                provider: elements.apiProvider.value,
-                url: elements.apiUrl.value.trim(),
+                url: apiUrl,  // 使用拼接后的完整地址
                 key: elements.apiKey.value.trim(),
-                model: elements.apiModel.value.trim() || 'gpt-3.5-turbo',
-                temperature: parseFloat(elements.temperature.value) || 0.7,
+                model: elements.apiModel.value.trim() || ' ',
+                //temperature: parseFloat(elements.temperature.value) || 0.7,
                 availableModels: state.apiConfig.availableModels || []
             };
             
@@ -2128,18 +2521,31 @@ async function sendMessage() {
             showContactsView();
         }
 
-        // 保存应用设置
+        // =========================================================================
+        // 应用设置管理
+        // 作用：保存应用的其他设置
+        // 使用场景：设置页面
+        // 说明：处理上下文长度、自动滚动等设置
+        // =========================================================================
+
+        /** 保存应用设置 */
         function saveAppSettings() {
             state.appSettings = {
                 maxContextLength: parseInt(elements.maxContextLength.value) || 10,
-                autoScroll: elements.autoScroll.checked,
                 aiHelpPrompt: elements.aiHelpPrompt.value.trim() || state.appSettings.aiHelpPrompt
             };
             
             saveToLocalStorage();
         }
 
+        // =========================================================================
         // 创建聊天窗口
+        // 作用：两步表单创建新的对话窗口
+        // 使用场景：点击添加按钮
+        // 说明：分两步收集窗口名称和角色信息，然后创建新的联系人
+        // =========================================================================
+
+        /** 创建聊天窗口（主函数） */
         function createChat() {
             const windowName = elements.windowName.value.trim();
             const roleName = elements.roleName.value.trim();
@@ -2177,20 +2583,24 @@ async function sendMessage() {
             openChat(newContact);
         }
 
-        // 搜索功能
+        // =========================================================================
+        // 搜索聊天功能
+        // 作用：在聊天记录中搜索关键词，支持上下导航
+        // 使用场景：点击聊天设置按钮
+        // 说明：实现聊天记录的搜索和高亮显示
+        // =========================================================================
+
+        /** 设置搜索功能的事件监听 */
         function setupSearch() {
             // 对话设置按钮点击事件
             elements.chatSettingsBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 
-                // 切换搜索容器显示
                 const isSearchVisible = elements.searchContainer.style.display === 'flex';
                 
                 if (isSearchVisible) {
-                    // 如果搜索框已显示，隐藏它
                     elements.searchContainer.style.display = 'none';
                 } else {
-                    // 如果搜索框未显示，显示它并聚焦
                     elements.searchContainer.style.display = 'flex';
                     elements.searchInput.focus();
                 }
@@ -2241,7 +2651,6 @@ async function sendMessage() {
                     state.currentSearchIndex--;
                     highlightCurrentSearchResult();
                     
-                    // 更新按钮状态
                     elements.nextResult.disabled = false;
                     if (state.currentSearchIndex === 0) {
                         elements.prevResult.disabled = true;
@@ -2255,7 +2664,6 @@ async function sendMessage() {
                     state.currentSearchIndex++;
                     highlightCurrentSearchResult();
                     
-                    // 更新按钮状态
                     elements.prevResult.disabled = false;
                     if (state.currentSearchIndex === state.searchResults.length - 1) {
                         elements.nextResult.disabled = true;
@@ -2278,7 +2686,7 @@ async function sendMessage() {
             });
         }
         
-        // 高亮当前搜索结果
+        /** 高亮当前搜索结果 */
         function highlightCurrentSearchResult() {
             // 清除之前的高亮
             document.querySelectorAll('.message').forEach(msg => {
@@ -2296,7 +2704,7 @@ async function sendMessage() {
             }
         }
         
-        // 关闭搜索
+        /** 关闭搜索 */
         function closeSearch() {
             elements.searchContainer.style.display = 'none';
             elements.searchResults.classList.remove('active');
@@ -2310,13 +2718,19 @@ async function sendMessage() {
             });
         }
 
-        // 自动调整输入框高度
+        // =========================================================================
+        // 工具函数
+        // 作用：提供各种辅助功能
+        // 使用场景：多处调用的通用功能
+        // =========================================================================
+
+        /** 自动调整输入框高度 */
         function autoResizeTextarea() {
             elements.messageInput.style.height = 'auto';
             elements.messageInput.style.height = Math.min(elements.messageInput.scrollHeight, 120) + 'px';
         }
 
-        // 切换到步骤
+        /** 切换到指定步骤 */
         function goToStep(step) {
             state.currentStep = step;
             
@@ -2329,7 +2743,13 @@ async function sendMessage() {
             elements.stepContainer2.classList.toggle('active', step === 2);
         }
 
-        // 显示联系人视图
+        // =========================================================================
+        // 页面导航
+        // 作用：处理页面之间的切换
+        // 使用场景：底部导航点击、返回按钮点击
+        // =========================================================================
+
+        /** 显示联系人视图 */
         function showContactsView() {
             // 显示底部导航栏
             elements.bottomNav.style.display = 'flex';
@@ -2345,7 +2765,7 @@ async function sendMessage() {
             renderContacts();
         }
 
-        // 显示设置视图
+        /** 显示设置视图 */
         function showSettingsView() {
             // 显示底部导航栏
             elements.bottomNav.style.display = 'flex';
@@ -2360,7 +2780,13 @@ async function sendMessage() {
             closeSearch();
         }
 
-        // 初始化应用
+        // =========================================================================
+        // 应用初始化
+        // 作用：启动应用，绑定所有事件
+        // 使用场景：页面加载完成时调用
+        // 说明：整个应用的入口点，设置所有事件监听和初始状态
+        // =========================================================================
+
         function init() {
             // 从LocalStorage加载数据
             loadFromLocalStorage();
@@ -2407,19 +2833,28 @@ async function sendMessage() {
             });
             
             // 设置页面事件
-            elements.apiProvider.addEventListener('change', updateApiProviderDisplay);
             elements.getModelsBtn.addEventListener('click', getAvailableModels);
             elements.modelSelect.addEventListener('change', function() {
                 if (this.value) {
                     elements.apiModel.value = this.value;
                 }
             });
-            
             elements.saveApiConfigBtn.addEventListener('click', saveAPIConfig);
             
+            //API地址自动补全
+            if (elements.apiUrl) {
+                elements.apiUrl.addEventListener('blur', function() {
+                    let value = elements.apiUrl.value.trim();
+                    if (value && !value.includes('/chat/completions')) {
+                        value = value.replace(/\/+$/, '');
+                        elements.apiUrl.value = value + '/chat/completions';
+                        console.log('自动补全为:', elements.apiUrl.value);
+                    }
+                });
+            }
+
             // 保存其他设置
             elements.maxContextLength.addEventListener('change', saveAppSettings);
-            elements.autoScroll.addEventListener('change', saveAppSettings);
             elements.aiHelpPrompt.addEventListener('change', saveAppSettings);
             
             // 创建聊天模态框事件
@@ -2468,8 +2903,585 @@ async function sendMessage() {
             // 设置功能
             setupSearch();
             
-            // 初始化API提供方显示
-            updateApiProviderDisplay();
+            // 设置聊天菜单功能
+            setupChatSettingsMenu();
+            
+            // 保存聊天模态框事件
+            elements.closeSaveChatModal.addEventListener('click', () => {
+                elements.saveChatModal.style.display = 'none';
+            });
+            
+            elements.cancelSaveChatBtn.addEventListener('click', () => {
+                elements.saveChatModal.style.display = 'none';
+            });
+            
+            elements.selectAllMessagesBtn.addEventListener('click', toggleSelectAll);
+            
+            elements.confirmSaveChatBtn.addEventListener('click', saveSelectedMessagesAsImage);
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.saveChatModal) {
+                    elements.saveChatModal.style.display = 'none';
+                }
+            });
+            
+            // 设置保存模态框搜索功能
+            setupSaveModalSearch();
+        }
+
+        // =========================================================================
+        // 保存聊天记录功能相关函数（在 init 函数外部定义）
+        // =========================================================================
+
+        /** 打开保存聊天记录模态框 */
+        function openSaveChatModal() {
+            if (!state.currentContact) return;
+            
+            const messages = state.messages[state.currentContact.id] || [];
+            if (messages.length === 0) {
+                alert('当前没有聊天记录可保存');
+                return;
+            }
+            
+            // 清空之前的选择
+            state.selectedMessages.clear();
+            state.isAllSelected = false;
+            
+            // 重置搜索状态
+            state.saveSearchResults = [];
+            state.saveCurrentSearchIndex = -1;
+            state.originalMessages = [];
+            
+            // 渲染消息列表
+            renderSaveMessageList(messages);
+            
+            // 显示模态框
+            elements.saveChatModal.style.display = 'flex';
+            
+            // 隐藏搜索结果导航栏（初始状态）
+            const saveSearchResults = document.getElementById('saveSearchResults');
+            if (saveSearchResults) {
+                saveSearchResults.classList.remove('active');
+            }
+            
+            // 清空搜索输入框
+            const saveSearchInput = document.getElementById('saveSearchInput');
+            if (saveSearchInput) {
+                saveSearchInput.value = '';
+            }
+            
+            // 更新计数
+            updateSelectedCount();
+        }
+
+        // =========================================================================
+        // 保存模态框搜索功能（修改为与聊天窗口相同的定位功能）
+        // 作用：在保存聊天记录模态框中搜索消息，定位到对应消息气泡并高亮
+        // 使用场景：用户在保存模态框中搜索特定消息时
+        // 说明：不过滤消息列表，只高亮匹配的消息并支持上下导航
+        // =========================================================================
+
+        /** 设置保存模态框搜索功能的事件监听 */
+        function setupSaveModalSearch() {
+            const saveSearchInput = document.getElementById('saveSearchInput');
+            const saveSearchCancelBtn = document.getElementById('saveSearchCancelBtn');
+            const saveSearchResults = document.getElementById('saveSearchResults');
+            const saveSearchCount = document.getElementById('saveSearchCount');
+            const savePrevResult = document.getElementById('savePrevResult');
+            const saveNextResult = document.getElementById('saveNextResult');
+            
+            if (!saveSearchInput) return;
+            
+            // 搜索输入事件
+            saveSearchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm && state.currentContact) {
+                    const contactId = state.currentContact.id;
+                    const messages = state.messages[contactId] || [];
+                    
+                    // =========================================================================
+                    // 修改：不再过滤消息列表，而是记录匹配的消息索引用于导航
+                    // 作用：保持显示所有消息，只高亮匹配的项
+                    // =========================================================================
+                    state.saveSearchResults = [];
+                    messages.forEach(msg => {
+                        if (msg.content.toLowerCase().includes(searchTerm)) {
+                            state.saveSearchResults.push(msg);
+                        }
+                    });
+                    
+                    // 显示搜索结果导航
+                    if (state.saveSearchResults.length > 0) {
+                        saveSearchResults.classList.add('active');
+                        saveSearchCount.textContent = `找到 ${state.saveSearchResults.length} 个结果`;
+                        state.saveCurrentSearchIndex = 0;
+                        highlightSaveSearchResult();
+                        
+                        // 更新导航按钮状态
+                        savePrevResult.disabled = true;
+                        saveNextResult.disabled = state.saveSearchResults.length <= 1;
+                    } else {
+                        saveSearchResults.classList.remove('active');
+                        state.saveCurrentSearchIndex = -1;
+                        state.saveSearchResults = [];
+                        
+                        // 清除所有高亮
+                        document.querySelectorAll('.save-message-wrapper').forEach(wrapper => {
+                            wrapper.classList.remove('highlight');
+                        });
+                    }
+                } else {
+                    // 搜索词为空，关闭搜索
+                    closeSaveModalSearch();
+                }
+            });
+            
+            // 取消搜索按钮
+            saveSearchCancelBtn.addEventListener('click', function() {
+                closeSaveModalSearch();
+                saveSearchInput.value = ''; // 清空输入框
+            });
+            
+            // 上一个结果按钮
+            savePrevResult.addEventListener('click', function() {
+                if (state.saveCurrentSearchIndex > 0) {
+                    state.saveCurrentSearchIndex--;
+                    highlightSaveSearchResult();
+                    
+                    saveNextResult.disabled = false;
+                    savePrevResult.disabled = state.saveCurrentSearchIndex === 0;
+                }
+            });
+            
+            // 下一个结果按钮
+            saveNextResult.addEventListener('click', function() {
+                if (state.saveCurrentSearchIndex < state.saveSearchResults.length - 1) {
+                    state.saveCurrentSearchIndex++;
+                    highlightSaveSearchResult();
+                    
+                    savePrevResult.disabled = false;
+                    saveNextResult.disabled = state.saveCurrentSearchIndex === state.saveSearchResults.length - 1;
+                }
+            });
+        }
+
+        /** 高亮保存模态框中的当前搜索结果 */
+        function highlightSaveSearchResult() {
+            // 清除之前的高亮
+            document.querySelectorAll('.save-message-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('highlight');
+            });
+            
+            // 高亮当前匹配项
+            if (state.saveCurrentSearchIndex >= 0 && state.saveCurrentSearchIndex < state.saveSearchResults.length) {
+                const result = state.saveSearchResults[state.saveCurrentSearchIndex];
+                const messageElement = document.querySelector(`.save-message-wrapper[data-id="${result.id}"]`);
+                if (messageElement) {
+                    messageElement.classList.add('highlight');
+                    
+                    // =========================================================================
+                    // 滚动到高亮消息位置
+                    // 作用：让用户自动看到当前搜索到的消息
+                    // =========================================================================
+                    messageElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    
+                    // 更新搜索结果计数显示（显示当前是第几个）
+                    const saveSearchCount = document.getElementById('saveSearchCount');
+                    if (saveSearchCount) {
+                        saveSearchCount.textContent = `找到 ${state.saveSearchResults.length} 个结果 (${state.saveCurrentSearchIndex + 1}/${state.saveSearchResults.length})`;
+                    }
+                }
+            }
+        }
+
+        /** 关闭保存模态框搜索 */
+        function closeSaveModalSearch() {
+            const saveSearchResults = document.getElementById('saveSearchResults');
+            const saveSearchInput = document.getElementById('saveSearchInput');
+            
+            if (saveSearchResults) {
+                saveSearchResults.classList.remove('active');
+            }
+            
+            if (saveSearchInput) {
+                saveSearchInput.value = '';
+            }
+            
+            state.saveSearchResults = [];
+            state.saveCurrentSearchIndex = -1;
+            
+            // 清除高亮
+            document.querySelectorAll('.save-message-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('highlight');
+            });
+        }
+
+        /** 打开保存聊天记录模态框（需要修改，移除filterMessagesBySearch调用） */
+        function openSaveChatModal() {
+            if (!state.currentContact) return;
+            
+            const messages = state.messages[state.currentContact.id] || [];
+            if (messages.length === 0) {
+                alert('当前没有聊天记录可保存');
+                return;
+            }
+            
+            // 清空之前的选择
+            state.selectedMessages.clear();
+            state.isAllSelected = false;
+            
+            // 重置搜索状态
+            state.saveSearchResults = [];
+            state.saveCurrentSearchIndex = -1;
+            state.originalMessages = [];
+            
+            // 渲染消息列表（显示所有消息）
+            renderSaveMessageList(messages);
+            
+            // 显示模态框
+            elements.saveChatModal.style.display = 'flex';
+            
+            // 隐藏搜索结果导航栏（初始状态）
+            const saveSearchResults = document.getElementById('saveSearchResults');
+            if (saveSearchResults) {
+                saveSearchResults.classList.remove('active');
+            }
+            
+            // 清空搜索输入框
+            const saveSearchInput = document.getElementById('saveSearchInput');
+            if (saveSearchInput) {
+                saveSearchInput.value = '';
+            }
+            
+            // 更新计数
+            updateSelectedCount();
+        }
+
+        /** 渲染保存消息列表 - 不需要修改，保持显示所有消息 */
+        function renderSaveMessageList(messages) {
+            elements.saveMessageList.innerHTML = '';
+            
+            messages.forEach((msg, index) => {
+                // 创建消息包装器，用于处理选中状态和点击事件
+                const wrapper = document.createElement('div');
+                wrapper.className = `save-message-wrapper ${msg.isUser ? 'user-message' : 'ai-message'} ${state.selectedMessages.has(msg.id) ? 'selected' : ''}`;
+                wrapper.dataset.id = msg.id;
+                wrapper.dataset.index = index;
+                
+                // 创建消息气泡 - 完全复用聊天窗口的样式
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.isUser ? 'user' : 'ai'}`;
+                
+                // 只显示消息内容，不显示时间
+                messageDiv.innerHTML = `<div class="message-content">${msg.content}</div>`;
+                
+                // 组装
+                wrapper.appendChild(messageDiv);
+                
+                // 点击包装器切换选中状态
+                wrapper.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSelectMessage(msg.id);
+                });
+                
+                elements.saveMessageList.appendChild(wrapper);
+            });
+            
+            // 更新全选按钮状态
+            updateSelectAllButton();
+        }
+
+        /** 切换消息选中状态 **/
+        function toggleSelectMessage(messageId) {
+            if (state.selectedMessages.has(messageId)) {
+                state.selectedMessages.delete(messageId);
+            } else {
+                state.selectedMessages.add(messageId);
+            }
+            
+            // 更新包装器样式
+            const wrapper = elements.saveMessageList.querySelector(`[data-id="${messageId}"]`);
+            if (wrapper) {
+                wrapper.classList.toggle('selected', state.selectedMessages.has(messageId));
+            }
+            
+            // 更新全选状态和计数
+            state.isAllSelected = false;
+            updateSelectAllButton();
+            updateSelectedCount();
+        }
+
+        /** 全选/取消全选 **/
+        function toggleSelectAll() {
+            const messages = state.messages[state.currentContact.id] || [];
+            
+            if (state.isAllSelected) {
+                // 取消全选
+                state.selectedMessages.clear();
+                state.isAllSelected = false;
+            } else {
+                // 全选
+                messages.forEach(msg => state.selectedMessages.add(msg.id));
+                state.isAllSelected = true;
+            }
+            
+            // 重新渲染消息列表
+            renderSaveMessageList(messages);
+            
+            // 更新按钮文字和计数
+            updateSelectAllButton();
+            updateSelectedCount();
+        }
+
+        /** 更新全选按钮文字 */
+        function updateSelectAllButton() {
+            if (elements.selectAllMessagesBtn) {
+                elements.selectAllMessagesBtn.textContent = state.isAllSelected ? '取消全选' : '全选';
+            }
+        }
+
+        /** 更新已选数量显示 */
+        function updateSelectedCount() {
+            if (elements.selectedMessagesCount) {
+                elements.selectedMessagesCount.textContent = `已选择 ${state.selectedMessages.size} 条`;
+            }
+        }
+
+        /** 保存选中的消息为图片 */
+        async function saveSelectedMessagesAsImage() {
+            if (state.selectedMessages.size === 0) {
+                alert('请至少选择一条消息');
+                return;
+            }
+            
+            // 创建临时容器来渲染选中的消息
+            const tempContainer = document.createElement('div');
+            tempContainer.style.cssText = `
+                position: fixed;
+                top: -9999px;
+                left: -9999px;
+                background: var(--bg-primary);
+                padding: 20px;
+                border-radius: 15px;
+                max-width: 380px;
+            `;
+            
+            // 获取选中的消息并按时间排序
+            const messages = state.messages[state.currentContact.id] || [];
+            const selectedMessages = messages
+                .filter(msg => state.selectedMessages.has(msg.id))
+                .sort((a, b) => a.id - b.id);  // 按时间正序
+            
+            // 渲染选中的消息 - 不显示时间
+            selectedMessages.forEach(msg => {
+                const msgDiv = document.createElement('div');
+
+                // 设置消息样式
+                const isUser = msg.isUser;
+                msgDiv.style.cssText = `
+                    max-width: 85%;
+                    padding: 12px 16px;
+                    border-radius: 18px;
+                    font-size: 14px;
+                    line-height: 1.4;
+                    word-wrap: break-word;
+                    margin-bottom: 10px;
+                    ${isUser ? `
+                        margin-left: auto;
+                        background: #38b2ac;
+                        color: white;
+                        border-bottom-right-radius: 6px;
+                    ` : `
+                        margin-right: auto;
+                        background: #2d3748;
+                        color: #e2e8f0;
+                        border: 1px solid #2d3748;
+                        border-bottom-left-radius: 6px;
+                    `}
+                `;
+                
+                // 只显示消息内容，不显示时间
+                msgDiv.textContent = msg.content;
+                
+                tempContainer.appendChild(msgDiv);
+            });
+            
+            // 添加到body
+            document.body.appendChild(tempContainer);
+            
+            try {
+                // 使用html2canvas截图
+                const canvas = await html2canvas(tempContainer, {
+                    scale: 2,
+                    backgroundColor: '#1a1f2c',
+                    logging: false,
+                    allowTaint: false,
+                    useCORS: true
+                });
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.download = `Echo_Garden_${new Date().toLocaleDateString()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // 关闭模态框
+                elements.saveChatModal.style.display = 'none';
+                
+            } catch (error) {
+                console.error('保存图片失败:', error);
+                alert('保存失败，请重试');
+            } finally {
+                // 移除临时容器
+                document.body.removeChild(tempContainer);
+            }
+        }
+
+        // =========================================================================
+        // 修改原有的setupSearch函数，移除原有的聊天设置按钮点击事件
+        // 新功能：点击设置按钮显示菜单，而不是直接显示搜索
+        // =========================================================================
+        function setupChatSettingsMenu() {
+            // 点击设置按钮显示/隐藏菜单
+            elements.chatSettingsBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                const menu = elements.chatSettingsMenu;
+                const isVisible = menu.style.display === 'block';
+                
+                if (isVisible) {
+                    menu.style.display = 'none';
+                } else {
+                    menu.style.display = 'block';
+                }
+            });
+            
+            // 点击菜单中的"搜索聊天记录"
+            elements.menuSearchBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 隐藏菜单
+                elements.chatSettingsMenu.style.display = 'none';
+                
+                // 显示搜索栏（原功能）
+                elements.searchContainer.style.display = 'flex';
+                elements.searchInput.focus();
+            });
+            
+            // 点击菜单中的"保存聊天记录"
+            elements.menuSaveChatBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // 隐藏菜单
+                elements.chatSettingsMenu.style.display = 'none';
+                
+                // 打开保存聊天记录模态框
+                openSaveChatModal();
+            });
+            
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function(e) {
+                if (!elements.chatSettingsBtn.contains(e.target) && 
+                    !elements.chatSettingsMenu.contains(e.target)) {
+                    elements.chatSettingsMenu.style.display = 'none';
+                }
+            });
+            
+            // 阻止菜单内的点击事件冒泡
+            elements.chatSettingsMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+
+        // =========================================================================
+        // 修改原有的setupSearch函数，移除其中原有的聊天设置按钮事件
+        // =========================================================================
+        function setupSearch() {
+            // 移除原有的chatSettingsBtn事件监听，因为已经在setupChatSettingsMenu中处理
+            
+            // 搜索输入事件（保持不变）
+            elements.searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                if (searchTerm && state.currentContact) {
+                    const contactId = state.currentContact.id;
+                    const messages = state.messages[contactId] || [];
+                    
+                    // 查找匹配的消息
+                    state.searchResults = [];
+                    messages.forEach(msg => {
+                        if (msg.content.toLowerCase().includes(searchTerm)) {
+                            state.searchResults.push(msg);
+                        }
+                    });
+                    
+                    // 显示搜索结果
+                    if (state.searchResults.length > 0) {
+                        elements.searchResults.classList.add('active');
+                        elements.searchCount.textContent = `找到 ${state.searchResults.length} 个结果`;
+                        state.currentSearchIndex = 0;
+                        highlightCurrentSearchResult();
+                        
+                        // 更新导航按钮状态
+                        elements.prevResult.disabled = true;
+                        elements.nextResult.disabled = state.searchResults.length <= 1;
+                    } else {
+                        elements.searchResults.classList.remove('active');
+                        state.currentSearchIndex = -1;
+                    }
+                } else {
+                    closeSearch();
+                }
+            });
+            
+            // 取消搜索按钮（保持不变）
+            elements.searchCancelBtn.addEventListener('click', function() {
+                closeSearch();
+            });
+            
+            // 上一个结果按钮（保持不变）
+            elements.prevResult.addEventListener('click', function() {
+                if (state.currentSearchIndex > 0) {
+                    state.currentSearchIndex--;
+                    highlightCurrentSearchResult();
+                    
+                    elements.nextResult.disabled = false;
+                    if (state.currentSearchIndex === 0) {
+                        elements.prevResult.disabled = true;
+                    }
+                }
+            });
+            
+            // 下一个结果按钮（保持不变）
+            elements.nextResult.addEventListener('click', function() {
+                if (state.currentSearchIndex < state.searchResults.length - 1) {
+                    state.currentSearchIndex++;
+                    highlightCurrentSearchResult();
+                    
+                    elements.prevResult.disabled = false;
+                    if (state.currentSearchIndex === state.searchResults.length - 1) {
+                        elements.nextResult.disabled = true;
+                    }
+                }
+            });
+            
+            // 点击页面其他地方关闭搜索（保持不变）
+            document.addEventListener('click', function(e) {
+                if (!elements.searchContainer.contains(e.target) && 
+                    !elements.chatSettingsBtn.contains(e.target) &&
+                    !elements.searchResults.contains(e.target)) {
+                    closeSearch();
+                }
+            });
+            
+            // 阻止搜索容器内的点击事件冒泡（保持不变）
+            elements.searchContainer.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
         }
 
         // 启动应用
